@@ -84,7 +84,7 @@ class MixtureOptimizer(object):
         action, selected_log_probs, self.hx, self.cx = self.coordinator(packed_inputs, self.hx, self.cx)
 
         self.action = action.cpu().numpy().flatten()
-        self.selected_log_probs.append(selected_log_probs.cpu().numpy().flatten())
+        self.selected_log_probs.append(selected_log_probs.flatten())
         self.meta_step += 1
     def meta_update(self, rewards):
         self.selected_log_probs = torch.cat(self.selected_log_probs, 0)
