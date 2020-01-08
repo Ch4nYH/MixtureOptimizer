@@ -84,7 +84,7 @@ class MixtureOptimizer(object):
         packed_inputs = rnnutils.pack_padded_sequence(inputs, length_gradients, batch_first = True, enforce_sorted = False)
         action, selected_log_probs, self.hx, self.cx = self.coordinator(packed_inputs, self.hx, self.cx)
 
-        self.action = action.numpy().flatten()
+        self.action = action.cpu().numpy().flatten()
         self.selected_log_probs.append(selected_log_probs)
         self.meta_step += 1
     def meta_update(self, rewards):
