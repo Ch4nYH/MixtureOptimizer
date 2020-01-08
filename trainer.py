@@ -1,4 +1,5 @@
 from utils import accuracy, AverageMeter
+from tqdm import tqdm
 
 class Trainer(object):
 
@@ -26,6 +27,7 @@ class Trainer(object):
         for i in range(1, epochs + 1):
             self.train_acc.reset()
             self.val_acc.reset()
+            print("Epoch [{}/{}]: Training ... ".format(i, epochs))
             self.train()
             self.val()
     
@@ -35,8 +37,7 @@ class Trainer(object):
     
     def train(self):
         self.model.train()
-        
-        for i, data in enumerate(self.dataset):
+        for i, data in enumerate(tqdm(self.dataset)):
             batch_input, batch_target = data
             input_var = batch_input
             target_var = batch_target
