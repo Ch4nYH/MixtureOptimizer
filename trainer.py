@@ -50,6 +50,8 @@ class Trainer(object):
             acc = accuracy(batch_output, target_var)
             self.train_acc.update(acc)
             if (i % self.print_preq):
+                print(i)
+                print(self.print_preq)
                 print("Train Accuracy: {}({})".format(acc, self.train_acc.avg))
                 
             self.optimizer.zero_grad()
