@@ -52,8 +52,6 @@ class Model(nn.Module):
         x = self.l2(x)
         return x      
 model = Model()
-print(list(model.parameters()))
-print(list(model.parameters()))
 optimizer = MixtureOptimizer(model.parameters(), 0.001)
 trainer = Trainer(model, nn.CrossEntropyLoss(), optimizer = optimizer, dataset = train_loader, val_dataset=val_loader, USE_CUDA = not args.no_cuda)
 trainer.run()
