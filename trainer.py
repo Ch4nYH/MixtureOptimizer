@@ -57,11 +57,13 @@ class Trainer(object):
             self.optimizer.step()
             if self.meta and i % self.unroll_length == 0:
                 self.val_acc.reset()
+                self.val()
                 reward = self.reward()
                 self.optimizer.meta_update(reward)
         
         if self.meta:
             self.val_acc.reset()
+            self.val()
             reward = self.reward()
             self.optimizer.meta_update(reward)
             
