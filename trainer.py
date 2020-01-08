@@ -19,6 +19,9 @@ class Trainer(object):
         
         self.reward_baseline = 0
         
+        if USE_CUDA:
+            self.model = self.model.cuda()
+        
     def run(self, epochs=1):
         for i in range(1, epochs + 1):
             self.train_acc.reset()
