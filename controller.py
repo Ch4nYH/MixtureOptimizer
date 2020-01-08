@@ -117,7 +117,6 @@ class MixtureOptimizer(object):
             state['vt_hat'] = state['vt'] / (1 - np.power(self.beta2, state['t']))
             state['r'] = state['r'] + (grad ** 2)
             p.data.add_(-self.update_rules[self.action[count]](grad, p))
-            print(grad)
         
     def zero_grad(self):
         for p in self.parameters:
