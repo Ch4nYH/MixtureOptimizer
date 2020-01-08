@@ -5,7 +5,7 @@ def preprocess(x, k = 5):
     log = torch.log(torch.abs(x) + 1e-7)
     clamped_log = (log / k).clamp(min = -1)
     sign = (x * np.exp(k)).clamp(min = -1, max = 1)
-    return torch.cat([clamped_log.unsqueeze(-1), sign.unsqueeze(-1)], axis = -1)
+    return torch.cat([clamped_log.unsqueeze(-1), sign.unsqueeze(-1)], dim = -1)
 
 def get_parameters_and_gradients(model)->list:
     parameters = list(map(lambda x: x.data.view(1, -1), model.parameters()))
