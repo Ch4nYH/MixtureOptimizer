@@ -70,7 +70,7 @@ class Trainer(object):
         self.iterations += i
     
     def val(self):
-        self.model.val()
+        self.model.eval()
         with torch.no_grad():
             for i, data in enumerate(self.val_dataset):
                 batch_input, batch_target = data
