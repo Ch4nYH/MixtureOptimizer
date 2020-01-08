@@ -87,6 +87,7 @@ class MixtureOptimizer(object):
         self.selected_log_probs.append(selected_log_probs)
         self.meta_step += 1
     def meta_update(self, rewards):
+        print(-sum(self.selected_log_probs) * rewards)
         action_loss = -sum(self.selected_log_probs) * rewards
         self.meta_optimizer.zero_grad()
         action_loss.backward()
