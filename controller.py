@@ -90,9 +90,7 @@ class MixtureOptimizer(object):
         self.meta_optimizer.step()
         
     def step(self):
-        print(self.parameters)
         gradients = list(map(lambda x: x.grad.data.detach().view(1, -1), self.parameters))
-        print(gradients)
         padded_grad, length_grad = copy_and_pad(gradients)
         
         self.meta_act(padded_grad, length_grad)
