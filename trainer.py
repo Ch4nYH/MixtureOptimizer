@@ -33,8 +33,8 @@ class Trainer(object):
             self.val()
     
     def reward(self):
-        self.baseline = 0.9 * self.baseline + 0.1 * self.val_acc.avg
-        return self.val_acc.avg - self.baseline
+        self.reward_baseline = 0.9 * self.reward_baseline + 0.1 * self.val_acc.avg / 100
+        return self.val_acc.avg / 100 - self.reward_baseline
     
     def train(self):
         self.model.train()

@@ -54,7 +54,6 @@ class MixtureOptimizer(object):
         self.hx = None
         self.cx = None
         self.meta_step = 0
-
         self.selected_log_probs = []
 
         
