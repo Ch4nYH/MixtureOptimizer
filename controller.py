@@ -67,8 +67,8 @@ class MixtureOptimizer(object):
         self.eta = eta
         
         self.update_rules = [lambda x, para: self.alpha * x, \
-            lambda x, para: self.alpha / (self.eta + np.sqrt(self.state[para]['r'])) * x, \
-            lambda x, para: self.alpha * self.state[para]['mt_hat'] / (np.sqrt(self.state[para]['vt_hat']) + self.eta)]
+            lambda x, para: self.alpha / (self.eta + torch.sqrt(self.state[para]['r'])) * x, \
+            lambda x, para: self.alpha * self.state[para]['mt_hat'] / (torch.sqrt(self.state[para]['vt_hat']) + self.eta)]
         
         self.USE_CUDA = USE_CUDA
         if self.USE_CUDA:
