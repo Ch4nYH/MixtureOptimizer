@@ -43,7 +43,7 @@ class LSTMCoordinator(nn.Module):
 
 class MixtureOptimizer(object):
     def __init__(self, parameters, meta_alpha, coordinator = LSTMCoordinator, meta_optimizer = optim.Adam, length_unroll = 20,\
-        alpha = 0.001, beta1 = 0.9, beta2 = 0.999, eta = 1e-8):
+        alpha = 0.001, beta1 = 0.9, beta2 = 0.999, eta = 1e-8, USE_CUDA = True):
         param = list(parameters)
         self.parameters = param
         
@@ -69,6 +69,10 @@ class MixtureOptimizer(object):
         self.update_rules = [lambda x, para: self.alpha * x, \
             lambda x, para: self.alpha / (self.eta + np.sqrt(self.state[para]['r'])) * x, \
             lambda x, para: self.alpha * self.state[para]['mt_hat'] / (np.sqrt(self.state[para]['vt_hat']) + self.eta)]
+        
+        self.USE_CUDA = USE_CUDA
+        if self.USE_CUDA:
+            self.coordinator = self.coordinator.cuda()
         
     def reset(self):
         self.hx = None
