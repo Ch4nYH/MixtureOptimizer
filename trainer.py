@@ -1,3 +1,4 @@
+import torch
 from utils import accuracy, AverageMeter
 from tqdm import tqdm
 
