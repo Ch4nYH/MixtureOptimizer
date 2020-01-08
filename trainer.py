@@ -4,7 +4,7 @@ from tqdm import tqdm
 class Trainer(object):
 
     def __init__(self, model=None, criterion=None, optimizer=None, dataset=None, USE_CUDA=True, \
-        unroll_length = 20, meta = False, val_dataset = None):
+        unroll_length = 20, meta = False, val_dataset = None, print_freq = 5):
         self.model = model
         self.criterion = criterion
         self.optimizer = optimizer
@@ -17,6 +17,7 @@ class Trainer(object):
         self.val_dataset = val_dataset
         self.train_acc = AverageMeter()
         self.val_acc   = AverageMeter()
+        self.print_preq = print_freq
         
         self.reward_baseline = 0
         
@@ -46,6 +47,11 @@ class Trainer(object):
                 target_var = target_var.cuda()
             batch_output = self.model(input_var)
             loss = self.criterion(batch_output, target_var)
+            acc = accuracy(batch_output, target_var)
+            self.train_acc.update(acc)
+            if (i % self.print_preq):
+                print("Train Accuracy: {}({})".format(acc, self.train_acc.avg))
+                
             self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()
