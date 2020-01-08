@@ -41,19 +41,24 @@ class LSTMCoordinator(nn.Module):
         selected_log_probs = log_prob.gather(1, action.data)
         return action, selected_log_probs, hx, cx    
 
-class Controller(object):
-    def __init__(self, parameters, coordinator = None, optimizer = None, meta_alpha = 0.001, length_unroll = 20,\
+class MixtureOptimizer(object):
+    def __init__(self, parameters, meta_alpha, coordinator = LSTMCoordinator, meta_optimizer = optim.Adam, length_unroll = 20,\
         alpha = 0.001, beta1 = 0.9, beta2 = 0.999, eta = 1e-8):
-        self.coordinator = coordinator
-        self.optimizer = optimizer(self.coordinator.parameters(), lr = meta_alpha)
+        param = list(parameters)
+        self.parameters = param
+        
+        max_length = max(list(map(lambda x:x.view(1,-1).shape[1], self.parameters)))
+        self.coordinator = coordinator(max_length = max_length)
+        self.meta_optimizer = meta_optimizer(self.coordinator.parameters(), lr = meta_alpha)
         self.length_unroll = length_unroll
         self.hx = None
         self.cx = None
         self.meta_step = 0
 
         self.selected_log_probs = []
+
         
-        self.parameters = list(parameters)
+        
         self.state = defaultdict(dict)
         
         self.alpha = alpha
@@ -70,7 +75,7 @@ class Controller(object):
         self.cx = None
         self.selected_log_probs = []
 
-    def meta_update(self, gradients, length_gradients):
+    def meta_act(self, gradients, length_gradients):
         inputs = preprocess(gradients)
         packed_inputs = rnnutils.pack_padded_sequence(inputs, length_gradients, batch_first = True, enforce_sorted = False)
         action, selected_log_probs, self.hx, self.cx = self.coordinator(packed_inputs, self.hx, self.cx)
@@ -78,13 +83,19 @@ class Controller(object):
         self.action = action.numpy().flatten()
         self.selected_log_probs.append(selected_log_probs)
         self.meta_step += 1
-            
-    def step(self):
+    def meta_update(self, rewards):
+        action_loss = -sum(self.selected_log_probs) * rewards
+        self.meta_optimizer.zero_grad()
+        action_loss.backward()
+        self.meta_optimizer.step()
         
-        gradients = list(map(lambda x: x.grad.data.view(1, -1), self.parameters))
+    def step(self):
+        print(self.parameters)
+        gradients = list(map(lambda x: x.grad.data.detach().view(1, -1), self.parameters))
+        print(gradients)
         padded_grad, length_grad = copy_and_pad(gradients)
-        with torch.no_grad():
-            self.meta_update(padded_grad, length_grad)
+        
+        self.meta_act(padded_grad, length_grad)
         count = 0
         for p in self.parameters:
             state = self.state[p]
@@ -118,13 +129,14 @@ if __name__ == '__main__':
     x = torch.randn((1, 3, 224, 224))
     label = torch.zeros(1).long()
     model = torchvision.models.AlexNet(2)
-    max_length = max(list(map(lambda x:x.view(1,-1).shape[1], model.parameters())))
+    
     criterion = nn.CrossEntropyLoss()
-    controller = Controller(model.parameters(), coordinator = LSTMCoordinator(max_length = max_length), optimizer = optim.Adam)
+    controller = MixtureOptimizer(model.parameters(), 0.001)
     for i in range(10):
         y = model(x)
         loss = criterion(y, label)
-        loss.backward()
+        
         controller.zero_grad()
+        loss.backward()
         controller.step()
         print(loss)
