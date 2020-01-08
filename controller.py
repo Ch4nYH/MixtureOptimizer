@@ -89,7 +89,7 @@ class MixtureOptimizer(object):
     def meta_update(self, rewards):
         self.selected_log_probs = torch.cat(self.selected_log_probs, 0)
         print(-sum(self.selected_log_probs))
-        print(reward)
+        print(rewards)
         action_loss = -sum(self.selected_log_probs) * rewards
         self.meta_optimizer.zero_grad()
         action_loss.backward()
