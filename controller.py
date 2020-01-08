@@ -93,6 +93,7 @@ class MixtureOptimizer(object):
         self.meta_optimizer.zero_grad()
         action_loss.backward()
         self.meta_optimizer.step()
+        self.selected_log_probs = []
         
     def step(self):
         gradients = list(map(lambda x: x.grad.data.detach().view(1, -1), self.parameters))
