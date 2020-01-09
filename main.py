@@ -58,5 +58,5 @@ class Model(nn.Module):
         return x      
 model = Model()
 optimizer = MixtureOptimizer(model.parameters(), 0.001)
-trainer = Trainer(model, nn.CrossEntropyLoss(), optimizer = optimizer, dataset = train_loader, val_dataset=val_loader, USE_CUDA = not args.no_cuda, meta = True)
+trainer = Trainer(model, nn.CrossEntropyLoss(), optimizer = optimizer, dataset = train_loader, val_dataset=val_loader, USE_CUDA = not args.no_cuda, meta = True, writer = writer)
 trainer.run(epochs = args.epochs)
