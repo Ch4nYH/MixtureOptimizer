@@ -61,12 +61,6 @@ class Trainer(object):
                 self.val()
                 reward = self.reward()
                 self.optimizer.meta_update(reward)
-        
-        if self.meta:
-            self.val_acc.reset()
-            self.val()
-            reward = self.reward()
-            self.optimizer.meta_update(reward)
             
         self.iterations += i
     
