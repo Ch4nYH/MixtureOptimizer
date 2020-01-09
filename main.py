@@ -7,9 +7,13 @@ import torchvision
 import torchvision.transforms as transforms
 from controller import MixtureOptimizer
 from trainer import Trainer
+
+import tensorboardX
 parser = argparse.ArgumentParser()
 parser.add_argument('--no-cuda', action="store_true")
+parser.add_argument('--task', type=str)
 args = parser.parse_args()
+writer = tensorboardX.SummaryWriter('logs/' + args.task)
 
 data_transforms = {
     'train': transforms.Compose([
@@ -54,4 +58,4 @@ class Model(nn.Module):
 model = Model()
 optimizer = MixtureOptimizer(model.parameters(), 0.001)
 trainer = Trainer(model, nn.CrossEntropyLoss(), optimizer = optimizer, dataset = train_loader, val_dataset=val_loader, USE_CUDA = not args.no_cuda, meta = True)
-trainer.run()
+trainer.run(epochs = 20)
