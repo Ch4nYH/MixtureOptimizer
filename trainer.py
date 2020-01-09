@@ -33,7 +33,7 @@ class Trainer(object):
             self.train()
             self.val()
             self.writer.add_scalar('train/accuracy', self.train_acc.avg, i)
-            self.writer.add_scalar('test/accuracy', self.test_acc.avg, i)
+            self.writer.add_scalar('test/accuracy', self.val_acc.avg, i)
     
     def reward(self):
         self.reward_baseline = 0.9 * self.reward_baseline + 0.1 * self.val_acc.avg / 100
