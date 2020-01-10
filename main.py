@@ -13,6 +13,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--no-cuda', action="store_true")
 parser.add_argument('--task', type=str)
 parser.add_argument('--epochs', type=int)
+parser.add_argument('--meta', action="store_true")
 args = parser.parse_args()
 writer = tensorboardX.SummaryWriter('logs/' + args.task)
 
@@ -58,5 +59,5 @@ class Model(nn.Module):
         return x      
 model = Model()
 optimizer = MixtureOptimizer(model.parameters(), 0.001)
-trainer = Trainer(model, nn.CrossEntropyLoss(), optimizer = optimizer, dataset = train_loader, val_dataset=val_loader, USE_CUDA = not args.no_cuda, meta = True, writer = writer)
+trainer = Trainer(model, nn.CrossEntropyLoss(), optimizer = optimizer, dataset = train_loader, val_dataset=val_loader, USE_CUDA = not args.no_cuda, meta = args.meta, writer = writer)
 trainer.run(epochs = args.epochs)
