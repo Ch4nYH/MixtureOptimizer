@@ -12,9 +12,11 @@ import tensorboardX
 parser = argparse.ArgumentParser()
 parser.add_argument('--no-cuda', action="store_true")
 parser.add_argument('--task', type=str)
-parser.add_argument('--epochs', type=int)
+parser.add_argument('--epochs', type=int, default = 20)
 parser.add_argument('--meta', action="store_true")
 parser.add_argument('--length-unroll', type=int)
+parser.add_argument('--batch-size', type=int, default = 256)
+parser.add_argument('--worker', type=int, default = 8)
 args = parser.parse_args()
 writer = tensorboardX.SummaryWriter('logs/' + args.task)
 
@@ -32,8 +34,8 @@ data_transforms = {
 train_dataset = torchvision.datasets.CIFAR10('./cifar', transform = data_transforms['train'])
 val_dataset = torchvision.datasets.CIFAR10('./cifar', transform = data_transforms['val'])
 
-train_loader = torch.utils.data.DataLoader(train_dataset, 128)
-val_loader = torch.utils.data.DataLoader(val_dataset, 128)
+train_loader = torch.utils.data.DataLoader(train_dataset, args.batch_size, num_workers=args.worker)
+val_loader = torch.utils.data.DataLoader(val_dataset, args.batch_size, num_workers=args.worker)
 
 
 
