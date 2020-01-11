@@ -43,7 +43,7 @@ class LSTMCoordinator(nn.Module):
 
 class MixtureOptimizer(object):
     def __init__(self, parameters, meta_alpha, coordinator = LSTMCoordinator, meta_optimizer = optim.Adam, length_unroll = 20,\
-        alpha = 0.001, beta1 = 0.9, beta2 = 0.999, eta = 1e-8, USE_CUDA = True):
+        alpha = 0.001, beta1 = 0.9, beta2 = 0.999, eta = 1e-8, USE_CUDA = True, writer = None):
         param = list(parameters)
         self.parameters = param
         
@@ -57,7 +57,7 @@ class MixtureOptimizer(object):
         self.selected_log_probs = []
 
         
-        
+        self.writer = writer
         self.state = defaultdict(dict)
         
         self.alpha = alpha
@@ -94,6 +94,9 @@ class MixtureOptimizer(object):
         self.meta_optimizer.step()
         self.selected_log_probs = []
         self.reset()
+        self.writer.add_scalar('meta/rewards', rewards)
+        self.writer.add_scalar('meta/action0', action[0])
+        self.meta_step += 1
         
     def step(self):
         gradients = list(map(lambda x: x.grad.data.detach().view(1, -1), self.parameters))

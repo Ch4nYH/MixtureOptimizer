@@ -59,7 +59,7 @@ class Model(nn.Module):
         return x      
 model = Model()
 if args.meta:
-    optimizer = MixtureOptimizer(model.parameters(), 0.001)
+    optimizer = MixtureOptimizer(model.parameters(), 0.001, writer = writer)
 else:
     optimizer = torch.optim.Adagrad(model.parameters(), 0.001)
 trainer = Trainer(model, nn.CrossEntropyLoss(), optimizer = optimizer, dataset = train_loader, val_dataset=val_loader, USE_CUDA = not args.no_cuda, meta = args.meta, writer = writer)
