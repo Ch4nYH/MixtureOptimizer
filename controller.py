@@ -94,7 +94,7 @@ class MixtureOptimizer(object):
         self.selected_log_probs = []
         self.reset()
         self.writer.add_scalar('meta/rewards', rewards)
-        self.writer.add_scalar('meta/action0', action[0])
+        self.writer.add_scalar('meta/action0', self.action[0])
         self.meta_step += 1
         
     def step(self):
