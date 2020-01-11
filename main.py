@@ -14,6 +14,7 @@ parser.add_argument('--no-cuda', action="store_true")
 parser.add_argument('--task', type=str)
 parser.add_argument('--epochs', type=int)
 parser.add_argument('--meta', action="store_true")
+parser.add_argument('--length-unroll', type=int)
 args = parser.parse_args()
 writer = tensorboardX.SummaryWriter('logs/' + args.task)
 
@@ -62,5 +63,6 @@ if args.meta:
     optimizer = MixtureOptimizer(model.parameters(), 0.001, writer = writer)
 else:
     optimizer = torch.optim.Adagrad(model.parameters(), 0.001)
-trainer = Trainer(model, nn.CrossEntropyLoss(), optimizer = optimizer, dataset = train_loader, val_dataset=val_loader, USE_CUDA = not args.no_cuda, meta = args.meta, writer = writer)
+trainer = Trainer(model, nn.CrossEntropyLoss(), optimizer = optimizer, dataset = train_loader, \
+    val_dataset=val_loader, USE_CUDA = not args.no_cuda, meta = args.meta, writer = writer, unroll_length=args.length_unroll)
 trainer.run(epochs = args.epochs)

@@ -42,7 +42,7 @@ class LSTMCoordinator(nn.Module):
         return action, selected_log_probs, hx, cx    
 
 class MixtureOptimizer(object):
-    def __init__(self, parameters, meta_alpha, coordinator = LSTMCoordinator, meta_optimizer = optim.Adam, length_unroll = 20,\
+    def __init__(self, parameters, meta_alpha, coordinator = LSTMCoordinator, meta_optimizer = optim.Adam, \
         alpha = 0.001, beta1 = 0.9, beta2 = 0.999, eta = 1e-8, USE_CUDA = True, writer = None):
         param = list(parameters)
         self.parameters = param
@@ -50,7 +50,6 @@ class MixtureOptimizer(object):
         max_length = max(list(map(lambda x:x.view(1,-1).shape[1], self.parameters)))
         self.coordinator = coordinator(max_length = max_length)
         self.meta_optimizer = meta_optimizer(self.coordinator.parameters(), lr = meta_alpha)
-        self.length_unroll = length_unroll
         self.hx = None
         self.cx = None
         self.meta_step = 0
