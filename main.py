@@ -115,9 +115,9 @@ def main():
             eps=args.eps,
             alpha=args.alpha,
             max_grad_norm=args.max_grad_norm)
-        meta_info = {'coord_size': coord_size, 'action_shape': action_shape, 'ob_name_lstm': ob_name_lstm, \
+        meta_info = {'coord_size': coord_size, 'action_space': action_space, 'ob_name_lstm': ob_name_lstm, \
             'ob_name_scalar': ob_name_lstm, 'obs_shape': obs_shape, 'hidden_size': hidden_size, \
-            'actor_critic': action_space}
+            'actor_critic': actor_critic}
     if args.optimzier == 'mixture':
 
         rollouts = RolloutStorage(num_steps, obs_shape, action_shape=coord_size, hidden_size=hidden_size, num_recurrent_layers=actor_critic.net.num_recurrent_layers)
