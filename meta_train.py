@@ -156,11 +156,10 @@ class MetaRunner(object):
 
     def reset(self):
         self.step = 0
-
-
+        self.trainer.reset()
     def run(self):
         for idx in range(self.meta_epochs):
-
+            self.reset()
             self.step_run(idx)
     def step_run(self, epoch):
         observation, prev_loss = self.trainer.observe()
