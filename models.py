@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.nn import init
 class SimpleModel(nn.Module):
     def __init__(self, num_classes = 10):
         super(SimpleModel, self).__init__()
@@ -15,7 +16,7 @@ class SimpleModel(nn.Module):
         return ['conv1', 'bn1', 'conv2', 'bn2', 'l1', 'l2']
 
     def reset(self):
-        def init(m):
+        def init_(m):
             if isinstance(m, nn.Conv2d):
                 init.xavier_uniform_(m.weight.data)
                 init.constant_(m.bias.data,0.1)
@@ -25,7 +26,7 @@ class SimpleModel(nn.Module):
             elif isinstance(m, nn.Linear):
                 m.weight.data.normal_(0,0.01)
                 m.bias.data.zero_()
-        self.apply(init)
+        self.apply(init_)
 
     def forward(self, x):
         x = self.conv1(x)
