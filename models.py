@@ -14,6 +14,19 @@ class SimpleModel(nn.Module):
     def layers(self):
         return ['conv1', 'bn1', 'conv2', 'bn2', 'l1', 'l2']
 
+    def reset(self):
+        def init(m):
+            if isinstance(m, nn.Conv2d):
+                init.xavier_uniform_(m.weight.data)
+                init.constant_(m.bias.data,0.1)
+            elif isinstance(m, nn.BatchNorm2d):
+                m.weight.data.fill_(1)
+                m.bias.data.zero_()
+            elif isinstance(m, nn.Linear):
+                m.weight.data.normal_(0,0.01)
+                m.bias.data.zero_()
+        self.apply(init)
+
     def forward(self, x):
         x = self.conv1(x)
         x = self.bn1(x)

@@ -44,7 +44,10 @@ class MetaTrainer(object):
 
     def get_steps(self):
         return self.total_steps,self.total_steps_epoch
-    
+    def reset(self):
+        self.step = 0
+        self.model.reset()
+        
     def observe(self):
         losses = []
         optimizee_step = []
@@ -152,8 +155,13 @@ class MetaRunner(object):
         self.gamma = 0.99
         self.gae_lambda = 0.95
 
+    def reset(self):
+        self.step = 0
+
+
     def run(self):
         for idx in range(self.meta_epochs):
+
             self.step_run(idx)
     def step_run(self, epoch):
         observation, prev_loss = self.trainer.observe()
