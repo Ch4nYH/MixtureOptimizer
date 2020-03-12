@@ -49,7 +49,7 @@ class MixtureOptimizer(object):
             state['mt_hat'] = state['mt'] / (1 - np.power(self.beta1, state['t']))
             state['vt_hat'] = state['vt'] / (1 - np.power(self.beta2, state['t']))
             layer_index = self.layers.index(name.split('.')[0])
-            p.data.add_(-self.update_rules[self.action[layer_index]](grad, p))
+            p.data.add_(-self.update_rules[self.actions[layer_index]](grad, p))
         
     def zero_grad(self):
         for p in self.parameters:
