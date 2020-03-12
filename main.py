@@ -135,7 +135,7 @@ def main():
         use_cuda = False
     else:
         try:
-            os.environ['CUDA_VISIBLE_DEVICES'] = int(args.gpu)
+            os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
             use_cuda = True
         except:
             print("Please specify only one GPU id.")
