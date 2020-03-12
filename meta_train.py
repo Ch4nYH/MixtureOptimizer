@@ -8,6 +8,8 @@ from a2c_ppo_acktr.models.policy import Policy
 from a2c_ppo_acktr.storage import RolloutStorage
 from collections import deque
 
+import numpy as np
+
 
 class MetaTrainer(object):
 
@@ -104,7 +106,7 @@ class MetaTrainer(object):
                 acc = accuracy(output, label)
                 loss = self.criterion(output, label.long())
                 accs.append(acc)
-        print(torch.mean(torch.cat(accs)).item())
+        print(np.mean(acc))
 
     def train_val_step(self):
         pass
