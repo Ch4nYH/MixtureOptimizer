@@ -130,8 +130,8 @@ class MetaRunner(object):
 
     def run(self):
         for idx in range(self.meta_epochs):
-            self.step(idx)
-    def step(self, epoch):
+            self.step_run(idx)
+    def step_run(self, epoch):
         observation, prev_loss = self.trainer.observe()
         self.step += self.window_size
         rollouts.obs[0].copy_(observation)
