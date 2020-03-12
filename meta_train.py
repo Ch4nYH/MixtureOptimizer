@@ -169,7 +169,7 @@ class MetaRunner(object):
             self.writer.add_scalar("value_loss", value_loss, self.step)
             self.writer.add_scalar("action_loss", action_loss, self.step)
 
-            print("action_loss:", action_loss, " @ %d steps"%(current_optimizee_step))
+            print("action_loss:", action_loss, " @ %d steps"%(self.step))
 
             self.rollouts.after_update()
 
