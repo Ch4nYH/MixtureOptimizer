@@ -159,7 +159,7 @@ class MetaRunner(object):
                 reward = curr_loss - prev_loss
                 episode_rewards.append(float(reward.cpu().numpy()))
                 self.writer.add_scalar("reward", reward, self.step)
-                self.rollouts.insert(obs, recurrent_hidden_states, action, action_log_prob, value, reward)
+                self.rollouts.insert(observation, recurrent_hidden_states, action, action_log_prob, value, reward)
 
             with torch.no_grad():
                 next_value = self.ac.get_value(self.rollouts.obs[-1:], self.rollouts.recurrent_hidden_states[-1]).detach()
