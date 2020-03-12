@@ -20,7 +20,7 @@ class MetaTrainer(object):
         self.USE_CUDA = USE_CUDA
 
         self.train_loader = train_loader
-        self.val_loader = val_dataset
+        self.val_loader = val_loader
 
         self.train_acc = AverageMeter()
         self.val_acc   = AverageMeter()
