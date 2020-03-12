@@ -34,6 +34,7 @@ class MetaTrainer(object):
 
         self.total_steps = 30 * len(self.train_loader)
         self.total_steps_epoch = len(self.train_loader)
+        self.step = 0
 
         if USE_CUDA:
             self.model = self.model.cuda()
