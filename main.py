@@ -8,7 +8,7 @@ import torchvision
 import torchvision.transforms as transforms
 from models import SimpleModel
 from trainer import Trainer
-from controller import MixtureOptimizer
+from optimizers import MixtureOptimizer
 from meta_train import MetaRunner
 
 

@@ -1,35 +1,58 @@
 import numpy as np
 from collections import defaultdict
 
-class MetaOptimizer(object):
-    def __init__(self, alpha = 0.001, beta1 = 0.9, beta2 = 0.999, eta = 1e-8):
+
+class MixtureOptimizer(object):
+    def __init__(self, parameters, alpha = 0.001, beta1 = 0.9, beta2 = 0.999, \
+        eta = 1e-8, USE_CUDA = True, writer = None, layers = None, names = None):
+        param = list(parameters)
+        self.parameters = param
+        self.state = defaultdict(dict)
+        
         self.alpha = alpha
         self.beta1 = beta1
         self.beta2 = beta2
         self.eta = eta
+        self.layers = layers
+        self.actions = [0] * len(layers)
+        self.names = names
+        self.update_rules = [
+            lambda x, para: 0, \
+            lambda x, para: self.alpha * x, \
+            lambda x, para: self.alpha * self.state[para]['mt_hat'] / (torch.sqrt(self.state[para]['vt_hat']) + self.eta)]
         
-        self.mt = defaultdict(float)
-        self.vt = defaultdict(float)
-        self.mt_hat = defaultdict(float)
-        self.vt_hat = defaultdict(float)
-        self.t = 0
+        self.USE_CUDA = USE_CUDA
         
-        self.update_rules = [lambda x, name: self.alpha * x, \
-            lambda x, name: self.alpha / (self.eta + np.sqrt(self.r[name])) * x, \
-            lambda x, name: self.alpha * self.mt_hat[name] / (np.sqrt(self.vt_hat[name]) + self.eta)]
+    def reset(self):
+        self.hx = None
+        self.cx = None
+        self.selected_log_probs = []
+
+    def set_actions(self, actions):
+        self.actions = actions
+
+    def step(self):
+
+        for name, p in zip(self.names, self.parameters):
+            state = self.state[p]
+            if len(state) == 0: # State initialization
+                state['t'] = 0
+                state['mt'] = 0
+                state['vt'] = 0
+                state['mt_hat'] = 0
+                state['vt_hat'] = 0
+                
+            grad = p.grad.data
+            state['t'] = state['t'] + 1
+            state['mt'] = self.beta1 * state['mt'] + (1 - self.beta1) * grad
+            state['vt'] = self.beta2 * state['vt'] + (1 - self.beta2) * (grad ** 2)
+            state['mt_hat'] = state['mt'] / (1 - np.power(self.beta1, state['t']))
+            state['vt_hat'] = state['vt'] / (1 - np.power(self.beta2, state['t']))
+            layer_index = self.layers.find(name.split([0]))
+            p.data.add_(-self.update_rules[self.action[layer_index]](grad, p))
         
-    def update(self, para, grad, name, action):
-        # update moments
-        self.t = self.t + 1
-        self.mt[name] = self.beta1 * self.mt[name] + (1 - self.beta1) * grad
-        self.vt[name] = self.beta2 * self.vt[name] + (1 - self.beta2) * (grad ** 2)
-        self.mt_hat[name] = self.mt[name]/ (1 - np.power(self.beta1, self.t))
-        self.vt_hat[name] = self.vt[name] / (1 - np.power(self.beta2, self.t))
-        para.add_(-self.update_rules[action](grad, name))
-        
-        
-    def log(self):
-        pass
-    def __call__(self, para, grad, names, actions):
-        for i in range(para.shape[0]):
-            self.update(para[i], grad[i], names[i], actions[i])
+    def zero_grad(self):
+        for p in self.parameters:
+            if p.grad is not None:
+                p.grad.detach_()
+                p.grad.zero_()
