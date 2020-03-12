@@ -152,8 +152,8 @@ class MetaRunner(object):
                     action_log_prob = action_log_prob.squeeze(0)
                     value = value.squeeze(0)
                     for idx in range(len(action)):
-                        writer.add_scalar("action/%s"%self.layers[idx], action[idx], self.step)
-                        writer.add_scalar("entropy/%s"%self.layers[idx], distribution.distributions[idx].entropy(), self.step)
+                        self.writer.add_scalar("action/%s"%self.layers[idx], action[idx], self.step)
+                        self.writer.add_scalar("entropy/%s"%self.layers[idx], distribution.distributions[idx].entropy(), self.step)
                     self.trainer.get_optimizer().set_actions(action.numpy())
                 observation, curr_loss = self.trainer.observe()
                 reward = curr_loss - prev_loss
