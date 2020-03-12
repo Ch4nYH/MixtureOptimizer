@@ -45,7 +45,7 @@ class A2C_ACKTR():
             rollouts.actions
         ))
 
-        values, action_log_probs, dist_entropy, _ = self.actor_critic.evaluate_actions(
+        values, action_log_probs, dist_entropy, _, _ = self.actor_critic.evaluate_actions(
             # rollouts.obs[:-1].view(-1, *obs_shape),
             # rollouts.recurrent_hidden_states[0].view(-1, self.actor_critic.recurrent_hidden_state_size),
             # rollouts.actions.view(-1, action_shape)
