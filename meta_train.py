@@ -54,6 +54,11 @@ class MetaTrainer(object):
         optimizee_step = [sum(optimizee_step) / len(optimizee_step)]
         optimizee_step = [torch.tensor(step).cuda() for step in optimizee_step]
         observation = torch.stack(losses + optimizee_step, dim=0)
+        prev_action = torch.Tensor(self.get_optimizer().actions)
+        if self.USE_CUDA:
+            prev_action = prev_action.cuda()
+        observation = torch.cat([observation, prev_action], dim = 0).unsqueeze(0)
+
         return observation, torch.tensor(losses)
 
     def train_step(self): 
