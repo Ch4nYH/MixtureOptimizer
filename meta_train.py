@@ -34,6 +34,7 @@ class MetaTrainer(object):
 
         self.total_steps = 30 * len(self.train_loader)
         self.total_steps_epoch = len(self.train_loader)
+        self.total_steps_val = len(self.val_loader)
         self.step = 0
 
         if USE_CUDA:
@@ -90,6 +91,21 @@ class MetaTrainer(object):
 
         return loss
 
+    def val(self):
+        accs = []
+        with torch.no_grad():
+            for _ in range(self.total_steps_val): 
+                input, label = self.get_val_samples()
+                if self.USE_CUDA:
+                    label = label.cuda()
+                    input = input.cuda()
+
+                output = self.model(input)
+                acc = accuracy(output, label)
+                loss = self.criterion(output, label.long())
+                accs.append(acc)
+        print(torch.mean(torch.cat(accs)).item())
+
     def train_val_step(self):
         pass
 
@@ -137,6 +153,7 @@ class MetaRunner(object):
     def run(self):
         for idx in range(self.meta_epochs):
             self.step_run(idx)
+            self.trainer.val()
     def step_run(self, epoch):
         observation, prev_loss = self.trainer.observe()
         self.step += self.window_size
