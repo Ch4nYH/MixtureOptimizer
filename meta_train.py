@@ -137,7 +137,7 @@ class MetaRunner(object):
         self.ac = ac
         self.num_steps = num_steps
         self.meta_epochs = meta_epochs
-        self.total_steps_epoch, self.total_steps = trainer.get_steps()
+        self.total_steps, self.total_steps_epoch = trainer.get_steps()
         self.step = 0
         self.window_size = self.trainer.window_size
         self.USE_CUDA = USE_CUDA
@@ -153,13 +153,12 @@ class MetaRunner(object):
     def run(self):
         for idx in range(self.meta_epochs):
             self.step_run(idx)
-            self.trainer.val()
     def step_run(self, epoch):
         observation, prev_loss = self.trainer.observe()
         self.step += self.window_size
         self.rollouts.obs[0].copy_(observation)
         episode_rewards = deque(maxlen=100)
-        while self.step < self.total_steps_epoch:
+        while self.step < self.total_steps:
             for step in range(self.num_steps):
                 with torch.no_grad():
                     self.step += self.window_size
@@ -190,4 +189,6 @@ class MetaRunner(object):
 
             self.rollouts.after_update()
 
+            if self.step % self.total_steps_epoch == 0:
+                self.trainer.val()
 
