@@ -122,7 +122,8 @@ def main():
             'actor_critic': actor_critic}
     if args.optimizer == 'mixture':
         rollouts = RolloutStorage(num_steps, obs_shape, action_shape=coord_size, hidden_size=hidden_size, num_recurrent_layers=actor_critic.net.num_recurrent_layers)
-        optimizer = MixtureOptimizer(model.parameters(), 0.001, writer = writer)
+        names = list(map(lambda x, y: x, model.named_parameters()))
+        optimizer = MixtureOptimizer(model.parameters(), 0.001, writer = writer, layers = model.layers(), names = names)
     elif args.optimizer == 'adam':
         optimizer = torch.optim.Adam(model.parameters(), 0.001)
     elif args.optimizer == 'sgd':
