@@ -135,7 +135,7 @@ class MetaRunner(object):
     def step_run(self, epoch):
         observation, prev_loss = self.trainer.observe()
         self.step += self.window_size
-        rollouts.obs[0].copy_(observation)
+        self.rollouts.obs[0].copy_(observation)
         episode_rewards = deque(maxlen=100)
         while self.step < self.total_steps_epoch:
             for step in range(self.num_steps):
