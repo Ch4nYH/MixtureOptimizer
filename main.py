@@ -118,8 +118,7 @@ def main():
         meta_info = {'coord_size': coord_size, 'action_space': action_space, 'ob_name_lstm': ob_name_lstm, \
             'ob_name_scalar': ob_name_lstm, 'obs_shape': obs_shape, 'hidden_size': hidden_size, \
             'actor_critic': actor_critic}
-    if args.optimzier == 'mixture':
-
+    if args.optimizer == 'mixture':
         rollouts = RolloutStorage(num_steps, obs_shape, action_shape=coord_size, hidden_size=hidden_size, num_recurrent_layers=actor_critic.net.num_recurrent_layers)
         optimizer = MixtureOptimizer(model.parameters(), 0.001, writer = writer)
     elif args.optimizer == 'adam':
