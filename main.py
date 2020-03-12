@@ -12,6 +12,7 @@ from trainer import Trainer
 from optimizers import MixtureOptimizer
 from meta_train import MetaRunner
 from a2c_ppo_acktr.models.policy import Policy
+from a2c_ppo_acktr import algo, utils
 
 
 import tensorboardX
