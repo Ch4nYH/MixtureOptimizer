@@ -10,7 +10,7 @@ import torchvision.transforms as transforms
 from models import SimpleModel
 from trainer import Trainer
 from optimizers import MixtureOptimizer
-from meta_train import MetaRunner
+from meta_train import MetaRunner, MetaTrainer
 from a2c_ppo_acktr.models.policy import Policy
 from a2c_ppo_acktr import algo, utils
 from a2c_ppo_acktr.storage import RolloutStorage
