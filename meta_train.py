@@ -147,7 +147,7 @@ class MetaRunner(object):
                 with torch.no_grad():
                     self.step += self.window_size
                     value, action, action_log_prob, recurrent_hidden_states, distribution = \
-                    self.ac.act(rollouts.obs[step:step+1], self.rollouts.recurrent_hidden_states[step])
+                    self.ac.act(self.rollouts.obs[step:step+1], self.rollouts.recurrent_hidden_states[step])
                     action = action.squeeze(0)
                     action_log_prob = action_log_prob.squeeze(0)
                     value = value.squeeze(0)
@@ -162,7 +162,7 @@ class MetaRunner(object):
                 self.rollouts.insert(obs, recurrent_hidden_states, action, action_log_prob, value, reward)
 
             with torch.no_grad():
-                next_value = self.ac.get_value(rollouts.obs[-1:], rollouts.recurrent_hidden_states[-1]).detach()
+                next_value = self.ac.get_value(self.rollouts.obs[-1:], self.rollouts.recurrent_hidden_states[-1]).detach()
             self.rollouts.compute_returns(next_value, self.use_gae, self.gamma, self.gae_lambda)
             value_loss, action_loss, dist_entropy = self.agent.update(self.rollouts)
             
@@ -171,6 +171,6 @@ class MetaRunner(object):
 
             print("action_loss:", action_loss, " @ %d steps"%(current_optimizee_step))
 
-            rollouts.after_update()
+            self.rollouts.after_update()
 
 
