@@ -1,14 +1,13 @@
 import numpy as np
 from collections import defaultdict
 
-class Optimizer(object):
+class MetaOptimizer(object):
     def __init__(self, alpha = 0.001, beta1 = 0.9, beta2 = 0.999, eta = 1e-8):
         self.alpha = alpha
         self.beta1 = beta1
         self.beta2 = beta2
         self.eta = eta
         
-        self.r = defaultdict(float)
         self.mt = defaultdict(float)
         self.vt = defaultdict(float)
         self.mt_hat = defaultdict(float)
@@ -26,7 +25,6 @@ class Optimizer(object):
         self.vt[name] = self.beta2 * self.vt[name] + (1 - self.beta2) * (grad ** 2)
         self.mt_hat[name] = self.mt[name]/ (1 - np.power(self.beta1, self.t))
         self.vt_hat[name] = self.vt[name] / (1 - np.power(self.beta2, self.t))
-        self.r[name] = self.r[name] + (grad ** 2)
         para.add_(-self.update_rules[action](grad, name))
         
         

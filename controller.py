@@ -39,71 +39,42 @@ class LSTMCoordinator(nn.Module):
         action = prob.multinomial(1)
         log_prob = torch.nn.functional.log_softmax(logit, dim=-1)
         selected_log_probs = log_prob.gather(1, action.data)
-        return action, selected_log_probs, hx, cx    
+        return action, selected_log_probs, hx, cx  
+
+
 
 class MixtureOptimizer(object):
-    def __init__(self, parameters, meta_alpha, coordinator = LSTMCoordinator, meta_optimizer = optim.Adam, \
-        alpha = 0.001, beta1 = 0.9, beta2 = 0.999, eta = 1e-8, USE_CUDA = True, writer = None):
+    def __init__(self, parameters, alpha = 0.001, beta1 = 0.9, beta2 = 0.999, \
+        eta = 1e-8, USE_CUDA = True, writer = None, layers = None, names = None):
         param = list(parameters)
         self.parameters = param
-        
-        max_length = max(list(map(lambda x:x.view(1,-1).shape[1], self.parameters)))
-        self.coordinator = coordinator(max_length = max_length)
-        self.meta_optimizer = meta_optimizer(self.coordinator.parameters(), lr = meta_alpha)
-        self.hx = None
-        self.cx = None
-        self.meta_step = 0
-        self.selected_log_probs = []
-
-        
-        self.writer = writer
         self.state = defaultdict(dict)
         
         self.alpha = alpha
         self.beta1 = beta1
         self.beta2 = beta2
         self.eta = eta
-        
-        self.update_rules = [lambda x, para: self.alpha * x, \
-            lambda x, para: self.alpha / (self.eta + torch.sqrt(self.state[para]['r'])) * x, \
+        self.layers = layers
+        self.actions = [0] * len(layers)
+        self.names = names
+        self.update_rules = [
+            lambda x, para: 0, \
+            lambda x, para: self.alpha * x, \
             lambda x, para: self.alpha * self.state[para]['mt_hat'] / (torch.sqrt(self.state[para]['vt_hat']) + self.eta)]
         
         self.USE_CUDA = USE_CUDA
-        if self.USE_CUDA:
-            self.coordinator = self.coordinator.cuda()
         
     def reset(self):
         self.hx = None
         self.cx = None
         self.selected_log_probs = []
 
-    def meta_act(self, gradients, length_gradients):
-        inputs = preprocess(gradients)
-        packed_inputs = rnnutils.pack_padded_sequence(inputs, length_gradients, batch_first = True, enforce_sorted = False)
-        action, selected_log_probs, self.hx, self.cx = self.coordinator(packed_inputs, self.hx, self.cx)
+    def set_action(self, actions):
+        self.actions = actions
 
-        self.action = action.cpu().numpy().flatten()
-        self.selected_log_probs.append(selected_log_probs.flatten())
-        self.meta_step += 1
-    def meta_update(self, rewards):
-        self.selected_log_probs = torch.cat(self.selected_log_probs, 0)
-        action_loss = -sum(self.selected_log_probs) * rewards
-        self.meta_optimizer.zero_grad()
-        action_loss.backward()
-        self.meta_optimizer.step()
-        self.selected_log_probs = []
-        self.reset()
-        self.writer.add_scalar('meta/rewards', rewards, self.meta_step)
-        self.writer.add_scalar('meta/action0', self.action[0], self.meta_step)
-        self.meta_step += 1
-        
     def step(self):
-        gradients = list(map(lambda x: x.grad.data.detach().view(1, -1), self.parameters))
-        padded_grad, length_grad = copy_and_pad(gradients)
-        
-        self.meta_act(padded_grad, length_grad)
-        count = 0
-        for p in self.parameters:
+
+        for name, p in zip(self.names, self.parameters):
             state = self.state[p]
             if len(state) == 0: # State initialization
                 state['t'] = 0
@@ -111,7 +82,6 @@ class MixtureOptimizer(object):
                 state['vt'] = 0
                 state['mt_hat'] = 0
                 state['vt_hat'] = 0
-                state['r'] = 0
                 
             grad = p.grad.data
             state['t'] = state['t'] + 1
@@ -119,8 +89,8 @@ class MixtureOptimizer(object):
             state['vt'] = self.beta2 * state['vt'] + (1 - self.beta2) * (grad ** 2)
             state['mt_hat'] = state['mt'] / (1 - np.power(self.beta1, state['t']))
             state['vt_hat'] = state['vt'] / (1 - np.power(self.beta2, state['t']))
-            state['r'] = state['r'] + (grad ** 2)
-            p.data.add_(-self.update_rules[self.action[count]](grad, p))
+            layer_index = self.layers.find(name.split([0]))
+            p.data.add_(-self.update_rules[self.action[layer_index]](grad, p))
         
     def zero_grad(self):
         for p in self.parameters:
