@@ -1,6 +1,6 @@
 import numpy as np
 from collections import defaultdict
-
+import torch
 
 class MixtureOptimizer(object):
     def __init__(self, parameters, alpha = 0.001, beta1 = 0.9, beta2 = 0.999, \
