@@ -101,6 +101,7 @@ def main():
         coord_size = len(model.layers())
         ob_name_lstm = ["loss", "step"]
         ob_name_scalar = []
+        num_steps = 3
         obs_shape = (len(ob_name_lstm) + len(ob_name_scalar) + coord_size, )
         _hidden_size = 20
         hidden_size = _hidden_size * len(ob_name_lstm)
