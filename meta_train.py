@@ -58,7 +58,7 @@ class MetaTrainer(object):
     def train_step(self): 
        
         self.optimizer.zero_grad()
-        input, label = self.get_samples()
+        input, label = self.get_train_samples()
         if self.USE_CUDA:
             label = label.cuda()
             input = input.cuda()
@@ -73,7 +73,7 @@ class MetaTrainer(object):
     def val_step(self):
         losses = []
         with torch.no_grad():
-            input, label = self.get_samples()
+            input, label = self.get_val_samples()
             if self.USE_CUDA:
                 label = label.cuda()
                 input = input.cuda()
