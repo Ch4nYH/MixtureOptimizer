@@ -11,7 +11,7 @@ from a2c_ppo_acktr.storage import RolloutStorage
 
 class MetaTrainer(object):
 
-    def __init__(self, model=None, criterion=None, optimizer=None, USE_CUDA=True, \
+    def __init__(self, model, criterion, optimizer, USE_CUDA=True, \
         train_loader = None, val_loader = None, print_freq = 5, writer = None):
         self.model = model
         self.criterion = criterion
@@ -124,6 +124,9 @@ class MetaRunner(object):
 
         self.layers = self.trainer.model.layers()
         self.meta_epochs = meta_epochs
+        self.use_gae = True
+        self.gamma = 0.99
+        self.gae_lambda = 0.95
 
     def run(self):
         for idx in range(self.meta_epochs):
@@ -154,7 +157,7 @@ class MetaRunner(object):
 
             with torch.no_grad():
                 next_value = self.ac.get_value(rollouts.obs[-1:], rollouts.recurrent_hidden_states[-1]).detach()
-            self.rollouts.compute_returns(next_value, args.use_gae, args.gamma, args.gae_lambda)
+            self.rollouts.compute_returns(next_value, self.use_gae, self.gamma, self.gae_lambda)
             value_loss, action_loss, dist_entropy = self.agent.update(self.rollouts)
             
             writer.add_scalar("value_loss", value_loss, self.step)
