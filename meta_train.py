@@ -166,8 +166,8 @@ class MetaRunner(object):
             self.rollouts.compute_returns(next_value, self.use_gae, self.gamma, self.gae_lambda)
             value_loss, action_loss, dist_entropy = self.agent.update(self.rollouts)
             
-            writer.add_scalar("value_loss", value_loss, self.step)
-            writer.add_scalar("action_loss", action_loss, self.step)
+            self.writer.add_scalar("value_loss", value_loss, self.step)
+            self.writer.add_scalar("action_loss", action_loss, self.step)
 
             print("action_loss:", action_loss, " @ %d steps"%(current_optimizee_step))
 
