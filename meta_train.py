@@ -6,7 +6,7 @@ from a2c_ppo_acktr import algo, utils
 from a2c_ppo_acktr.arguments import get_args
 from a2c_ppo_acktr.models.policy import Policy
 from a2c_ppo_acktr.storage import RolloutStorage
-
+from collections import deque
 
 
 class MetaTrainer(object):
