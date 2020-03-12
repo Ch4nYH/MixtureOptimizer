@@ -47,7 +47,6 @@ class MetaTrainer(object):
     def reset(self):
         self.step = 0
         self.model.reset()
-        
     def observe(self):
         losses = []
         optimizee_step = []
