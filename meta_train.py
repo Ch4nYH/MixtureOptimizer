@@ -180,7 +180,7 @@ class MetaRunner(object):
                         self.writer.add_scalar("entropy/%s"%self.layers[idx], distribution.distributions[idx].entropy(), self.step)
                     self.trainer.get_optimizer().set_actions(action.numpy())
                 observation, curr_loss = self.trainer.observe()
-                reward = curr_loss - prev_loss
+                reward = prev_loss - curr_loss
                 episode_rewards.append(float(reward.cpu().numpy()))
                 self.writer.add_scalar("reward", reward, self.step)
                 self.rollouts.insert(observation, recurrent_hidden_states, action, action_log_prob, value, reward)
