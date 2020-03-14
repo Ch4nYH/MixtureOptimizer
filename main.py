@@ -73,7 +73,7 @@ def main():
     args = parser.parse_args()
 
 
-    task_name = "op{}_da{}_ep{}_bs{}".format(args.optimizer, args.dataset, args.epochs, args.batch_size)
+    task_name = "{}_da{}_ep{}_bs{}".format(args.optimizer, args.dataset, args.epochs, args.batch_size)
     writer = tensorboardX.SummaryWriter(os.path.join(args.log_dir, task_name))
 
     data_transforms = {

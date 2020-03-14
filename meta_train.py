@@ -153,8 +153,10 @@ class MetaRunner(object):
         self.use_gae = True
         self.gamma = 0.99
         self.gae_lambda = 0.95
+        self.accumulated_step = 0
 
     def reset(self):
+        self.accumulated_step += self.step
         self.step = 0
         self.trainer.reset()
     def run(self):
@@ -176,13 +178,13 @@ class MetaRunner(object):
                     action_log_prob = action_log_prob.squeeze(0)
                     value = value.squeeze(0)
                     for idx in range(len(action)):
-                        self.writer.add_scalar("action/%s"%self.layers[idx], action[idx], self.step)
-                        self.writer.add_scalar("entropy/%s"%self.layers[idx], distribution.distributions[idx].entropy(), self.step)
+                        self.writer.add_scalar("action/%s"%self.layers[idx], action[idx], self.step + self.accumulated_step)
+                        self.writer.add_scalar("entropy/%s"%self.layers[idx], distribution.distributions[idx].entropy(), self.step + self.accumulated_step)
                     self.trainer.get_optimizer().set_actions(action.numpy())
                 observation, curr_loss = self.trainer.observe()
                 reward = prev_loss - curr_loss
                 episode_rewards.append(float(reward.cpu().numpy()))
-                self.writer.add_scalar("reward", reward, self.step)
+                self.writer.add_scalar("reward", reward, self.step + self.accumulated_step)
                 self.rollouts.insert(observation, recurrent_hidden_states, action, action_log_prob, value, reward)
 
             with torch.no_grad():
@@ -190,10 +192,10 @@ class MetaRunner(object):
             self.rollouts.compute_returns(next_value, self.use_gae, self.gamma, self.gae_lambda)
             value_loss, action_loss, dist_entropy = self.agent.update(self.rollouts)
             
-            self.writer.add_scalar("value_loss", value_loss, self.step)
-            self.writer.add_scalar("action_loss", action_loss, self.step)
+            self.writer.add_scalar("value_loss", value_loss, self.step + self.accumulated_step)
+            self.writer.add_scalar("action_loss", action_loss, self.step + self.accumulated_step)
 
-            print("action_loss:", action_loss, " @ %d steps"%(self.step))
+            print("action_loss:", action_loss, ", Optimizer Epoch: {}, Optimizee step: {}. "%(self.accumulated_step, self.step))
 
             self.rollouts.after_update()
 
