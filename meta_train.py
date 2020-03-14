@@ -201,4 +201,4 @@ class MetaRunner(object):
 
             if self.step % self.total_steps_epoch == 0:
                 acc = self.trainer.val()
-                self.writer.add_scalar("valccc", acc, self.step + self.accumulated_step)
+                self.writer.add_scalar("valacc", acc, self.step + self.accumulated_step)
