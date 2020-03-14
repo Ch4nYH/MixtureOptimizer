@@ -108,7 +108,7 @@ class MetaTrainer(object):
                 acc = accuracy(output, label)
                 loss = self.criterion(output, label.long())
                 accs.append(acc)
-        print(np.mean(acc))
+        return np.mean(acc)
 
     def train_val_step(self):
         pass
@@ -200,5 +200,5 @@ class MetaRunner(object):
             self.rollouts.after_update()
 
             if self.step % self.total_steps_epoch == 0:
-                self.trainer.val()
-
+                acc = self.trainer.val()
+                self.writer.add_scalar("valccc", acc, self.step + self.accumulated_step)
