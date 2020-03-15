@@ -7,7 +7,7 @@ import numpy as np
 
 import torchvision
 import torchvision.transforms as transforms
-from models import SimpleModel, resnet50
+from models import SimpleModel, resnet18
 from trainer import Trainer
 from optimizers import MixtureOptimizer
 from meta_train import MetaRunner, MetaTrainer
