@@ -238,17 +238,12 @@ class ResNet(nn.Module):
         return ['conv1', 'bn1', 'layer1', 'layer2', 'layer3', 'layer4', 'fc']
 
     def reset(self):
-        def init_(m):
+        for m in self.modules():
             if isinstance(m, nn.Conv2d):
-                init.xavier_uniform_(m.weight.data)
-                init.constant_(m.bias.data,0.1)
-            elif isinstance(m, nn.BatchNorm2d):
-                m.weight.data.fill_(1)
-                m.bias.data.zero_()
-            elif isinstance(m, nn.Linear):
-                m.weight.data.normal_(0,0.01)
-                m.bias.data.zero_()
-        self.apply(init_)
+                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
+            elif isinstance(m, (nn.BatchNorm2d, nn.GroupNorm)):
+                nn.init.constant_(m.weight, 1)
+                nn.init.constant_(m.bias, 0)
 
     def _forward_impl(self, x):
         # See note [TorchScript super()]
