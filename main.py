@@ -7,7 +7,7 @@ import numpy as np
 
 import torchvision
 import torchvision.transforms as transforms
-from models import SimpleModel
+from models import SimpleModel, resnet50
 from trainer import Trainer
 from optimizers import MixtureOptimizer
 from meta_train import MetaRunner, MetaTrainer
@@ -94,7 +94,8 @@ def main():
     train_loader = torch.utils.data.DataLoader(train_dataset, args.batch_size, num_workers=args.worker)
     val_loader = torch.utils.data.DataLoader(val_dataset, args.batch_size, num_workers=args.worker)
 
-    model = SimpleModel()
+    #model = SimpleModel()
+    model = resnet18()
 
     if args.optimizer == 'mixture':
         action_space = np.array([0, 1, 2])
