@@ -28,6 +28,7 @@ def main():
     parser.add_argument('--worker', type=int, default = 8)
     parser.add_argument('--dataset', type=str, default = "CIFAR10")
     parser.add_argument('--log-dir', type=str, default = "logs")
+    parser.add_argument('--num-classes', type=int, help="number of classes")
     parser.add_argument(
         '--lr-meta', type=float, default=7e-4, help='learning rate (default: 7e-4)')
     parser.add_argument(
@@ -93,12 +94,12 @@ def main():
     elif args.dataset == 'CIFAR100':
         train_dataset = torchvision.datasets.CIFAR10('./cifar-100', transform = data_transforms['train'], download = True)
         val_dataset = torchvision.datasets.CIFAR10('./cifar-100', transform = data_transforms['val'], download = True)
-        
+
     train_loader = torch.utils.data.DataLoader(train_dataset, args.batch_size, num_workers=args.worker)
     val_loader = torch.utils.data.DataLoader(val_dataset, args.batch_size, num_workers=args.worker)
 
     #model = SimpleModel()
-    model = resnet18()
+    model = resnet18(num_classes = args.num_classes)
 
     if args.optimizer == 'mixture':
         action_space = np.array([0, 1, 2])
