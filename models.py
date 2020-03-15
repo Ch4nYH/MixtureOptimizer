@@ -237,6 +237,19 @@ class ResNet(nn.Module):
     def layers(self):
         return ['conv1', 'bn1', 'layer1', 'layer2', 'layer3', 'layer4', 'fc']
 
+    def reset(self):
+        def init_(m):
+            if isinstance(m, nn.Conv2d):
+                init.xavier_uniform_(m.weight.data)
+                init.constant_(m.bias.data,0.1)
+            elif isinstance(m, nn.BatchNorm2d):
+                m.weight.data.fill_(1)
+                m.bias.data.zero_()
+            elif isinstance(m, nn.Linear):
+                m.weight.data.normal_(0,0.01)
+                m.bias.data.zero_()
+        self.apply(init_)
+
     def _forward_impl(self, x):
         # See note [TorchScript super()]
         x = self.conv1(x)
