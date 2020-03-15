@@ -87,10 +87,13 @@ def main():
         ])
     } 
     
-
-    train_dataset = torchvision.datasets.CIFAR10('./cifar', transform = data_transforms['train'])
-    val_dataset = torchvision.datasets.CIFAR10('./cifar', transform = data_transforms['val'])
-
+    if args.dataset == 'CIFAR10':
+        train_dataset = torchvision.datasets.CIFAR10('./cifar', transform = data_transforms['train'])
+        val_dataset = torchvision.datasets.CIFAR10('./cifar', transform = data_transforms['val'])
+    elif args.dataset == 'CIFAR100':
+        train_dataset = torchvision.datasets.CIFAR10('./cifar-100', transform = data_transforms['train'], download = True)
+        val_dataset = torchvision.datasets.CIFAR10('./cifar-100', transform = data_transforms['val'], download = True)
+        
     train_loader = torch.utils.data.DataLoader(train_dataset, args.batch_size, num_workers=args.worker)
     val_loader = torch.utils.data.DataLoader(val_dataset, args.batch_size, num_workers=args.worker)
 
