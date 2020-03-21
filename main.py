@@ -149,6 +149,7 @@ def main():
         trainer = MetaTrainer(model, nn.CrossEntropyLoss(), optimizer, train_loader = train_loader, \
             val_loader = val_loader, USE_CUDA = use_cuda, writer = writer)
         runner = MetaRunner(trainer, rollouts, agent, actor_critic, USE_CUDA = use_cuda, writer = writer)
+        runner.run()
     else:
         trainer = Trainer(model, nn.CrossEntropyLoss(), optimizer, train_loader = train_loader, 
             val_loader = val_loader, USE_CUDA = use_cuda, writer = writer)
