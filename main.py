@@ -105,8 +105,8 @@ def main():
                 transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
             ])
         } 
-        train_dataset = torchvision.datasets.ImageFolder('./tiny-imagenet-200', split="train")
-        val_dataset = torchvision.datasets.ImageFolder('./tiny-imagenet-200', split="val")
+        train_dataset = torchvision.datasets.ImageFolder('./tiny-imagenet-200/train', split="train")
+        val_dataset = torchvision.datasets.ImageFolder('./tiny-imagenet-200/val', split="val")
     train_loader = torch.utils.data.DataLoader(train_dataset, args.batch_size, num_workers=args.worker)
     val_loader = torch.utils.data.DataLoader(val_dataset, args.batch_size, num_workers=args.worker)
 
