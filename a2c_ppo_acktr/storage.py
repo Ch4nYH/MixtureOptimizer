@@ -20,7 +20,18 @@ class RolloutStorage(object):
         self.actions = torch.zeros(num_steps, action_shape)
         self.num_steps = num_steps
         self.step = 0
-
+    def reset(self):
+        device = self.obs.device
+        self.obs = torch.zeros(num_steps + 1, 1, *obs_shape)
+        self.recurrent_hidden_states = torch.zeros(num_steps + 1, num_recurrent_layers, 1, hidden_size)
+        self.rewards = torch.zeros(num_steps, 1, 1)
+        self.value_preds = torch.zeros(num_steps + 1, 1)
+        self.returns = torch.zeros(num_steps + 1, 1)
+        self.action_log_probs = torch.zeros(num_steps, 1)
+        self.actions = torch.zeros(num_steps, action_shape)
+        self.num_steps = num_steps
+        self.step = 0
+        self.to(device)
     def to(self, device):
         self.obs = self.obs.to(device)
         self.recurrent_hidden_states = self.recurrent_hidden_states.to(device)
@@ -42,7 +53,9 @@ class RolloutStorage(object):
     def after_update(self):
         self.obs[0].copy_(self.obs[-1])
         self.recurrent_hidden_states[0].copy_(self.recurrent_hidden_states[-1])
-
+    def reset(self):
+        zeros = self.torch.zeros(num_steps + 1, num_recurrent_layers, 1, hidden_size, device = self.recurrent_hidden_states.device)
+        self.recurrent_hidden_states[0].copy_(zeros)
     def compute_returns(self, next_value, use_gae, gamma, gae_lambda):
         if use_gae:
             self.value_preds[-1] = next_value

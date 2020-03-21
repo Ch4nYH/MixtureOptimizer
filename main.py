@@ -10,7 +10,7 @@ import torchvision.transforms as transforms
 from models import SimpleModel, resnet18
 from trainer import Trainer
 from optimizers import MixtureOptimizer
-from meta_train import MetaRunner, MetaTrainer
+from meta_trainer import MetaRunner, MetaTrainer
 from a2c_ppo_acktr.models.policy import Policy
 from a2c_ppo_acktr import algo, utils
 from a2c_ppo_acktr.storage import RolloutStorage
@@ -145,10 +145,12 @@ def main():
         except:
             print("Please specify only one GPU id.")
             raise RuntimeError
+    if args.optimizer == 'mixture':
+        trainer = MetaTrainer(model, nn.CrossEntropyLoss(), optimizer, train_loader = train_loader, \
+            val_loader = val_loader, USE_CUDA = use_cuda, writer = writer)
+        runner = MetaRunner(trainer, rollouts, agent, actor_critic, USE_CUDA = use_cuda, writer = writer)
+    else:
 
-    trainer = MetaTrainer(model, nn.CrossEntropyLoss(), optimizer, train_loader = train_loader, \
-        val_loader = val_loader, USE_CUDA = use_cuda, writer = writer)
-    runner = MetaRunner(trainer, rollouts, agent, actor_critic, USE_CUDA = use_cuda, writer = writer)
     runner.run()
 
 if __name__ == '__main__':
