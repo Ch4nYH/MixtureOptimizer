@@ -14,7 +14,7 @@ from meta_trainer import MetaRunner, MetaTrainer
 from a2c_ppo_acktr.models.policy import Policy
 from a2c_ppo_acktr import algo, utils
 from a2c_ppo_acktr.storage import RolloutStorage
-
+from trainer import Trainer, Runner
 
 import tensorboardX
 
@@ -150,8 +150,10 @@ def main():
             val_loader = val_loader, USE_CUDA = use_cuda, writer = writer)
         runner = MetaRunner(trainer, rollouts, agent, actor_critic, USE_CUDA = use_cuda, writer = writer)
     else:
-
-    runner.run()
+        train = Trainer(model, nn.CrossEntropyLoss, optimizer, train_loader = train_loader, 
+            val_loader = val_loader, USE_CUDA = use_cuda, writer = writer)
+        runner = Runner(trainer, USE_CUDA = use_cuda, writer = writer)
+        runner.run()
 
 if __name__ == '__main__':
     main()
