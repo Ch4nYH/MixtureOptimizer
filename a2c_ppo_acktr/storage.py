@@ -22,7 +22,7 @@ class RolloutStorage(object):
         self.step = 0
     def reset(self):
         device = self.obs.device
-        self.obs = torch.zeros(self.num_steps + 1, 1, *obs_shape)
+        self.obs = torch.zeros_like(self.obs)
         self.recurrent_hidden_states = torch.zeros(self.num_steps + 1, num_recurrent_layers, 1, hidden_size)
         self.rewards = torch.zeros(self.num_steps, 1, 1)
         self.value_preds = torch.zeros(self.num_steps + 1, 1)
