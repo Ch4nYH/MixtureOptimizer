@@ -20,20 +20,22 @@ class MixtureOptimizer(object):
             lambda x, para: 0, \
             lambda x, para: self.alpha * x, \
             lambda x, para: self.alpha * self.state[para]['mt_hat'] / (torch.sqrt(self.state[para]['vt_hat']) + self.eta)]
-        
         self.USE_CUDA = USE_CUDA
         
     def reset(self):
         self.hx = None
         self.cx = None
+        self.num_steps = 0
         self.selected_log_probs = []
         self.state = defaultdict(dict)
+
+    def set_alpha(self, alpha):
+        self.alpha = alpha
 
     def set_actions(self, actions):
         self.actions = actions
 
     def step(self):
-
         for name, p in zip(self.names, self.parameters):
             state = self.state[p]
             if len(state) == 0: # State initialization

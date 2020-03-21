@@ -64,6 +64,8 @@ class Trainer(object):
         self.model.train()
         self.optimizer.zero_grad()
         input, label = self.get_train_samples()
+        self.step += 1
+
         if self.USE_CUDA:
             label = label.cuda()
             input = input.cuda()

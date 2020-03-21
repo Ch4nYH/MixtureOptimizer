@@ -94,7 +94,19 @@ def main():
     elif args.dataset == 'CIFAR100':
         train_dataset = torchvision.datasets.CIFAR10('./cifar-100', transform = data_transforms['train'], download = True)
         val_dataset = torchvision.datasets.CIFAR10('./cifar-100', transform = data_transforms['val'], download = True)
-
+    elif args.dataset == 'tiny':
+        data_transforms = {
+            'train': transforms.Compose([
+                transforms.ToTensor(),
+                transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+            ]),
+            'val': transforms.Compose([
+                transforms.ToTensor(),
+                transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+            ])
+        } 
+        train_dataset = torchvision.datasets.ImageFolder('./tiny-imagenet-200', split="train")
+        val_dataset = torchvision.datasets.ImageFolder('./tiny-imagenet-200', split="val")
     train_loader = torch.utils.data.DataLoader(train_dataset, args.batch_size, num_workers=args.worker)
     val_loader = torch.utils.data.DataLoader(val_dataset, args.batch_size, num_workers=args.worker)
 
