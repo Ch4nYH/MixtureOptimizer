@@ -76,7 +76,7 @@ class Trainer(object):
         return loss, acc
             
     def val_step(self):
-        self.model.val()
+        self.model.eval()
         losses = []
         with torch.no_grad():
             input, label = self.get_val_samples()
@@ -91,7 +91,7 @@ class Trainer(object):
         return loss
 
     def val(self):
-        self.model.val()
+        self.model.eval()
         accs = []
         losses = []
         with torch.no_grad():
