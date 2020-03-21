@@ -99,6 +99,7 @@ class MetaTrainer(object):
     def val(self):
         self.model.val()
         accs = []
+        losses = []
         with torch.no_grad():
             for _ in range(self.total_steps_val): 
                 input, label = self.get_val_samples()
@@ -110,7 +111,8 @@ class MetaTrainer(object):
                 acc = accuracy(output, label)
                 loss = self.criterion(output, label.long())
                 accs.append(acc)
-        return np.mean(acc)
+                losses.append(losses)
+        return np.mean(acc), np.mean(losses)
 
     def train_val_step(self):
         pass
@@ -203,5 +205,6 @@ class MetaRunner(object):
             self.rollouts.after_update()
 
             if self.step % self.total_steps_epoch == 0:
-                acc = self.trainer.val()
-                self.writer.add_scalar("valacc", acc, self.step + self.accumulated_step)
+                acc, loss = self.trainer.val()
+                self.writer.add_scalar("val/acc", acc, self.step + self.accumulated_step)
+                self.writer.add_scalar("val/loss", loss, self.step + self.accumulated_step)
