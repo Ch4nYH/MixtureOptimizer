@@ -27,6 +27,7 @@ class MixtureOptimizer(object):
         self.hx = None
         self.cx = None
         self.selected_log_probs = []
+        self.state = defaultdict(dict)
 
     def set_actions(self, actions):
         self.actions = actions
