@@ -106,7 +106,7 @@ class Trainer(object):
                 loss = self.criterion(output, label.long())
                 losses.append(loss)
                 accs.append(acc)
-        return np.mean(np.array(accs)), np.mean(np.array(losses))
+        return torch.mean(accs), torch.mean(losses)
 
     def train_val_step(self):
         pass
