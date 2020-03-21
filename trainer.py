@@ -104,9 +104,9 @@ class Trainer(object):
                 output = self.model(input)
                 acc = accuracy(output, label)
                 loss = self.criterion(output, label.long())
-                losses.append(loss)
+                losses.append(loss.detach().item())
                 accs.append(acc)
-        return torch.mean(torch.cat(accs)), torch.mean(torch.cat(losses))
+        return np.mean(accs), np.mean(losses)
 
     def train_val_step(self):
         pass
