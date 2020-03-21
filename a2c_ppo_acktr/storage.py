@@ -28,7 +28,7 @@ class RolloutStorage(object):
         self.value_preds = torch.zeros(self.num_steps + 1, 1)
         self.returns = torch.zeros(self.num_steps + 1, 1)
         self.action_log_probs = torch.zeros(self.num_steps, 1)
-        self.actions = torch.zeros(self.num_steps, action_shape)
+        self.actions = torch.zeros_like(self.actions)
         self.step = 0
         self.to(device)
     def to(self, device):
