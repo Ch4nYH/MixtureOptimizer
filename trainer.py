@@ -150,8 +150,9 @@ class Runner(object):
 
     def reset(self):
         self.trainer.reset()
-        self.step = 0
         self.accumulated_step += self.step
+        self.step = 0
+        
     def run(self):
         for idx in range(self.meta_epochs):
 
