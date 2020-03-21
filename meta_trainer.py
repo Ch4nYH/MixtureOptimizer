@@ -112,7 +112,7 @@ class MetaTrainer(object):
                 loss = self.criterion(output, label.long())
                 accs.append(acc)
                 losses.append(losses)
-        return torch.mean(accs), torch.mean(losses)
+        return torch.mean(torch.cat(accs)), torch.mean(torch.cat(losses))
 
     def train_val_step(self):
         pass
