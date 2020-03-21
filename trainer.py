@@ -34,7 +34,7 @@ class Trainer(object):
         self.iter_train_loader = iter(self.train_loader)
         self.iter_val_loader = iter(self.val_loader)
 
-        self.total_steps = 30 * len(self.train_loader)
+        self.total_steps = epochs * len(self.train_loader)
         self.total_steps_epoch = len(self.train_loader)
         self.total_steps_val = len(self.val_loader)
         self.step = 0
@@ -55,7 +55,7 @@ class Trainer(object):
         return torch.tensor(losses)
 
     def get_steps(self):
-        return self.total_steps,self.total_steps_epoch
+        return self.total_steps, self.total_steps_epoch
     def reset(self):
         self.step = 0
         self.model.reset()
