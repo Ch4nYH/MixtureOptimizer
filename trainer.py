@@ -134,10 +134,6 @@ class Trainer(object):
 class Runner(object):
     def __init__(self, trainer, meta_epochs = 50, USE_CUDA = False, writer = None):
         self.trainer = trainer
-        self.rollouts = rollouts
-        self.agent = agent
-        self.ac = ac
-        self.num_steps = num_steps
         self.meta_epochs = meta_epochs
         self.total_steps, self.total_steps_epoch = trainer.get_steps()
         self.step = 0
