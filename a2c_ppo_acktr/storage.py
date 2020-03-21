@@ -53,9 +53,7 @@ class RolloutStorage(object):
     def after_update(self):
         self.obs[0].copy_(self.obs[-1])
         self.recurrent_hidden_states[0].copy_(self.recurrent_hidden_states[-1])
-    def reset(self):
-        zeros = self.torch.zeros(num_steps + 1, num_recurrent_layers, 1, hidden_size, device = self.recurrent_hidden_states.device)
-        self.recurrent_hidden_states[0].copy_(zeros)
+        
     def compute_returns(self, next_value, use_gae, gamma, gae_lambda):
         if use_gae:
             self.value_preds[-1] = next_value
