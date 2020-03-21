@@ -139,7 +139,6 @@ class Runner(object):
         self.step = 0
         self.window_size = self.trainer.window_size
         self.USE_CUDA = USE_CUDA
-        self.num_steps = num_steps
         self.writer = writer
 
         self.layers = self.trainer.model.layers()
