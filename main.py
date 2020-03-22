@@ -72,13 +72,17 @@ def main():
         default=0.5,
         help='max norm of gradients (default: 0.5)')
 
-     parser.add_argument(
+    parser.add_argument(
         '--pretrained',
         action="store_true")
+    parser.add_argument(
+        '--name',
+        type=str,
+        default="")
     args = parser.parse_args()
 
 
-    task_name = "{}_da{}_ep{}_bs{}".format(args.optimizer, args.dataset, args.epochs, args.batch_size)
+    task_name = "{}_da{}_ep{}_bs{}_{}".format(args.optimizer, args.dataset, args.epochs, args.batch_size, args.name)
     writer = tensorboardX.SummaryWriter(os.path.join(args.log_dir, task_name))
 
     data_transforms = {
