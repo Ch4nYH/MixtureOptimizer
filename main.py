@@ -105,18 +105,22 @@ def main():
     elif args.dataset == 'tiny':
         data_transforms = {
             'train': transforms.Compose([
+                transforms.RandomSizedCrop(224),
+                transforms.RandomHorizontalFlip(),
                 transforms.ToTensor(),
                 transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
             ]),
             'val': transforms.Compose([
+                transforms.Scale(256),
+                transforms.CenterCrop(224),
                 transforms.ToTensor(),
                 transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
             ])
         } 
         train_dataset = torchvision.datasets.ImageFolder('./tiny-imagenet-200/train', transform = data_transforms['train'])
         val_dataset = torchvision.datasets.ImageFolder('./tiny-imagenet-200/val', transform = data_transforms['val'])
-    train_loader = torch.utils.data.DataLoader(train_dataset, args.batch_size, num_workers=args.worker)
-    val_loader = torch.utils.data.DataLoader(val_dataset, args.batch_size, num_workers=args.worker)
+    train_loader = torch.utils.data.DataLoader(train_dataset, args.batch_size, num_workers=args.worker, shuffle = True)
+    val_loader = torch.utils.data.DataLoader(val_dataset, args.batch_size, num_workers=args.worker, shuffle = False)
 
     #model = SimpleModel()
     model = resnet18(pretrained = args.pretrained)
