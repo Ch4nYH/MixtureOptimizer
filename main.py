@@ -119,8 +119,9 @@ def main():
     val_loader = torch.utils.data.DataLoader(val_dataset, args.batch_size, num_workers=args.worker)
 
     #model = SimpleModel()
-    model = resnet18(num_classes = args.num_classes,pretrained = args.pretrained)
-
+    model = resnet18(pretrained = args.pretrained)
+    model.fc = nn.Linear(2048, args.num_classes)
+    
     if args.optimizer == 'mixture':
         action_space = np.array([0, 1, 2])
         coord_size = len(model.layers())
