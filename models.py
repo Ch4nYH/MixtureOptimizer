@@ -408,6 +408,13 @@ import tempfile
 import torch
 import warnings
 import zipfile
+ENV_TORCH_HOME = 'TORCH_HOME'
+ENV_XDG_CACHE_HOME = 'XDG_CACHE_HOME'
+DEFAULT_CACHE_DIR = '~/.cache'
+VAR_DEPENDENCY = 'dependencies'
+MODULE_HUBCONF = 'hubconf.py'
+READ_DATA_CHUNK = 8192
+hub_dir = None
 def _get_torch_home():
     torch_home = hub_dir
     if torch_home is None:
