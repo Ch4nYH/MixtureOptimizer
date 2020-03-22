@@ -408,6 +408,12 @@ import tempfile
 import torch
 import warnings
 import zipfile
+if sys.version_info[0] == 2:
+    from urlparse import urlparse
+    from urllib2 import urlopen  # noqa f811
+else:
+    from urllib.request import urlopen
+    from urllib.parse import urlparse  # noqa: F401
 ENV_TORCH_HOME = 'TORCH_HOME'
 ENV_XDG_CACHE_HOME = 'XDG_CACHE_HOME'
 DEFAULT_CACHE_DIR = '~/.cache'
