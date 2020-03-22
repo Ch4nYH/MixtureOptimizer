@@ -205,7 +205,7 @@ class MetaRunner(object):
 
             self.rollouts.after_update()
 
-            if self.step % self.total_steps_epoch == 0:
+            if self.step >= self.total_steps_epoch:
                 acc, loss = self.trainer.val()
                 self.writer.add_scalar("val/acc", acc, self.step + self.accumulated_step)
                 self.writer.add_scalar("val/loss", loss, self.step + self.accumulated_step)
