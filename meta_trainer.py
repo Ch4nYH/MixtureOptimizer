@@ -121,6 +121,7 @@ class MetaTrainer(object):
     def get_train_samples(self):
         try:
             sample = next(self.iter_train_loader)
+            print(sample[0].shape)
         except:
             self.iter_train_loader = iter(self.train_loader)
             sample = next(self.iter_train_loader)
