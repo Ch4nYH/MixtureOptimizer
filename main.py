@@ -71,6 +71,10 @@ def main():
         type=float,
         default=0.5,
         help='max norm of gradients (default: 0.5)')
+
+     parser.add_argument(
+        '--pretrained',
+        action="store_true")
     args = parser.parse_args()
 
 
@@ -111,7 +115,7 @@ def main():
     val_loader = torch.utils.data.DataLoader(val_dataset, args.batch_size, num_workers=args.worker)
 
     #model = SimpleModel()
-    model = resnet18(num_classes = args.num_classes)
+    model = resnet18(num_classes = args.num_classes,pretrained = args.pretrained)
 
     if args.optimizer == 'mixture':
         action_space = np.array([0, 1, 2])
