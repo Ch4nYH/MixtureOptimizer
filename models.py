@@ -408,6 +408,14 @@ import tempfile
 import torch
 import warnings
 import zipfile
+def _get_torch_home():
+    torch_home = hub_dir
+    if torch_home is None:
+        torch_home = os.path.expanduser(
+            os.getenv(ENV_TORCH_HOME,
+                      os.path.join(os.getenv(ENV_XDG_CACHE_HOME,
+                                             DEFAULT_CACHE_DIR), 'torch')))
+    return torch_home
 def load_state_dict_from_url(url, model_dir=None, map_location=None, progress=True, check_hash=False):
     r"""Loads the Torch serialized object at the given URL.
     If downloaded file is a zip file, it will be automatically
