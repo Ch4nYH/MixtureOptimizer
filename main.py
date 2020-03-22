@@ -120,8 +120,8 @@ def main():
 
     #model = SimpleModel()
     model = resnet18(pretrained = args.pretrained)
-    model.fc = nn.Linear(2048, args.num_classes)
-    
+    model.fc = nn.Linear(512, args.num_classes)
+
     if args.optimizer == 'mixture':
         action_space = np.array([0, 1, 2])
         coord_size = len(model.layers())
