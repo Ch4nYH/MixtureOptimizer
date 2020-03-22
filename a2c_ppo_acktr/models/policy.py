@@ -14,7 +14,7 @@ from a2c_ppo_acktr.models.rnn_state_encoder import RNNStateEncoder
 
 
 class Policy(nn.Module):
-    def __init__(self, coord_size, input_size=(1, 1), action_space=1, hidden_size=1, window_size=1):
+    def __init__(self, coord_size, input_size=(1, 1), action_space=1, hidden_size=1, window_size=1, action_embedding = 3):
         # input_size: (#lstm_input, #mlp_input)
         super().__init__()
         # TODO: should change "batch_size" to coord_size
