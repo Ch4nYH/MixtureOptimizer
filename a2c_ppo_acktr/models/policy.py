@@ -38,10 +38,10 @@ class Policy(nn.Module):
 
     def act(self, observations, actions, rnn_hidden_states, deterministic=False):
         if (self.action_embedding_size > 0):
-            action_embedding = torch.zeros((observations.shape[0], self.action_embedding_size), device = observations.device)
-            for i in range(action_embedding.shape[0]):
-                action_embedding[i,:] = self.action_embedding[actions[i]]
+            
+        print(actions.shape)
         print(action_embedding.shape)
+        print(observations.shape)
         features, rnn_hidden_states = self.net(observations, rnn_hidden_states)
         distribution = self.action_distribution(features)
         # (coord, seq_len*batch, feature) ==> (seq_len*batch, coord, feature)
