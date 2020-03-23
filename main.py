@@ -177,8 +177,8 @@ def main():
         runner.run()
     else:
         trainer = Trainer(model, nn.CrossEntropyLoss(), optimizer, train_loader = train_loader, 
-            val_loader = val_loader, USE_CUDA = use_cuda, writer = writer, meta_epochs = args.meta_epochs)
-        runner = Runner(trainer, USE_CUDA = use_cuda, writer = writer)
+            val_loader = val_loader, USE_CUDA = use_cuda, writer = writer)
+        runner = Runner(trainer, USE_CUDA = use_cuda, writer = writer, meta_epochs = args.meta_epochs)
         runner.run()
 
 if __name__ == '__main__':
