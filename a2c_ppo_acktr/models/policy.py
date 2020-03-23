@@ -39,7 +39,8 @@ class Policy(nn.Module):
     def act(self, observations, actions, rnn_hidden_states, deterministic=False):
         if (self.action_embedding_size > 0):
             pass
-        print(actions.shape)
+        if actions is not None:
+            print(actions.shape)
         print(action_embedding.shape)
         print(observations.shape)
         features, rnn_hidden_states = self.net(observations, rnn_hidden_states)
