@@ -7,7 +7,7 @@ from a2c_ppo_acktr.arguments import get_args
 from a2c_ppo_acktr.models.policy import Policy
 from a2c_ppo_acktr.storage import RolloutStorage
 from collections import deque
-
+from collections import defaultdict
 import numpy as np
 
 
@@ -59,7 +59,8 @@ class Trainer(object):
     def reset(self):
         self.step = 0
         self.model.reset()
-
+        self.optimizer.state = defaultdict(dict)
+        
     def train_step(self): 
         self.model.train()
         self.optimizer.zero_grad()
@@ -166,7 +167,7 @@ class Runner(object):
         while self.step < self.total_steps:
             self.step += self.window_size
             curr_loss = self.trainer.observe()
-
+            self.writer.add_scalar("train/loss", curr_loss, self.step + self.accumulated_step)
             if self.step >= self.total_steps_epoch:
                 acc, loss = self.trainer.val()
                 self.writer.add_scalar("val/acc", acc, self.step + self.accumulated_step)

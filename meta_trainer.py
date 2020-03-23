@@ -180,7 +180,7 @@ class MetaRunner(object):
                 with torch.no_grad():
                     self.step += self.window_size
                     value, action, action_log_prob, recurrent_hidden_states, distribution = \
-                    self.ac.act(self.rollouts.obs[step:step+1], action, self.rollouts.recurrent_hidden_states[step])
+                    self.ac.act(self.rollouts.obs[step:step+1], self.rollouts.recurrent_hidden_states[step])
                     action = action.squeeze(0)
                     action_log_prob = action_log_prob.squeeze(0)
                     value = value.squeeze(0)
@@ -189,6 +189,7 @@ class MetaRunner(object):
                         self.writer.add_scalar("entropy/%s"%self.layers[idx], distribution.distributions[idx].entropy(), self.step + self.accumulated_step)
                     self.trainer.get_optimizer().set_actions(action.numpy())
                 observation, curr_loss = self.trainer.observe()
+                self.writer.add_scalar("train/loss", curr_loss, self.step + self.accumulated_step)
                 reward = prev_loss - curr_loss
                 episode_rewards.append(float(reward.cpu().numpy()))
                 self.writer.add_scalar("reward", reward, self.step + self.accumulated_step)

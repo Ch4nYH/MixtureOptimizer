@@ -30,19 +30,19 @@ class Policy(nn.Module):
         self.hidden_size = hidden_size
         self.window_size = window_size
         self.action_embedding_size = action_embedding
-        if (self.action_embedding_size > 0):
-            self.action_embedding = nn.Embedding(action_space, self.action_embedding_size)
+        #if (self.action_embedding_size > 0):
+        #    self.action_embedding = nn.Embedding(action_space, self.action_embedding_size)
 
     def forward(self, *x):
         raise NotImplementedError
 
-    def act(self, observations, actions, rnn_hidden_states, deterministic=False):
-        if (self.action_embedding_size > 0):
-            pass
-        if actions is not None:
-            print(actions.shape)
+    def act(self, observations, rnn_hidden_states, deterministic=False):
+        #if (self.action_embedding_size > 0):
+        #    pass
+        #if actions is not None:
+        #    print(actions.shape)
         #print(action_embedding.shape)
-        print(observations.shape)
+        #print(observations.shape)
         features, rnn_hidden_states = self.net(observations, rnn_hidden_states)
         distribution = self.action_distribution(features)
         # (coord, seq_len*batch, feature) ==> (seq_len*batch, coord, feature)
