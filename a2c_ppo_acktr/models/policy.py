@@ -38,7 +38,7 @@ class Policy(nn.Module):
 
     def act(self, observations, actions, rnn_hidden_states, deterministic=False):
         if (self.action_embedding_size > 0):
-            
+            pass
         print(actions.shape)
         print(action_embedding.shape)
         print(observations.shape)
