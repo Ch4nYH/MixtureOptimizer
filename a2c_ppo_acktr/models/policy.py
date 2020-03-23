@@ -14,11 +14,11 @@ from a2c_ppo_acktr.models.rnn_state_encoder import RNNStateEncoder
 
 
 class Policy(nn.Module):
-    def __init__(self, coord_size, input_size=(1, 1), action_space=1, hidden_size=1, window_size=1, action_embedding = 3):
+    def __init__(self, coord_size, input_size=(1, 1), action_space=1, hidden_size=1, window_size=1, action_embedding = 0):
         # input_size: (#lstm_input, #mlp_input)
         super().__init__()
         # TODO: should change "batch_size" to coord_size
-        self.net = BasicNet(coord_size, input_size=input_size, hidden_size=hidden_size, window_size=window_size)
+        self.net = BasicNet(coord_size, input_size=input_size + action_embedding, hidden_size=hidden_size, window_size=window_size)
         # will coordinate-wisely return distributions
         self.action_distribution = Categorical(input_size[0]*hidden_size+input_size[1]+1, action_space, coord_size=coord_size)
         self.critic = CriticHead(coord_size * (input_size[0]*hidden_size+input_size[1]+1))
@@ -28,11 +28,19 @@ class Policy(nn.Module):
         self.action_space = action_space
         self.hidden_size = hidden_size
         self.window_size = window_size
+        self.action_embedding_size = action_embedding
+        if (self.action_embedding_size > 0):
+            self.action_embedding = nn.Embedding(action_space, self.action_embedding_size)
 
     def forward(self, *x):
         raise NotImplementedError
 
-    def act(self, observations, rnn_hidden_states, deterministic=False):
+    def act(self, observations, actions, rnn_hidden_states, deterministic=False):
+        if (self.action_embedding_size > 0):
+            action_embedding = torch.zeros((observations.shape[0], self.action_embedding_size), device = observations.device)
+            for i in range(action_embedding.shape[0]):
+                action_embedding[i,:] = self.action_embedding[actions[i]]
+        print(action_embedding.shape)
         features, rnn_hidden_states = self.net(observations, rnn_hidden_states)
         distribution = self.action_distribution(features)
         # (coord, seq_len*batch, feature) ==> (seq_len*batch, coord, feature)

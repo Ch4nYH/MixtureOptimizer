@@ -29,8 +29,11 @@ def main():
     parser.add_argument('--dataset', type=str, default = "CIFAR10")
     parser.add_argument('--log-dir', type=str, default = "logs")
     parser.add_argument('--num-classes', type=int, help="number of classes")
+    parser.add_argument('--action-embedding', type=int, help="embedding", default = 0)
     parser.add_argument(
         '--lr-meta', type=float, default=7e-4, help='learning rate (default: 7e-4)')
+    parser.add_argument(
+        '--meta-epochs', type=int, default=30, help='meta epochs')
     parser.add_argument(
         '--eps',
         type=float,
@@ -137,7 +140,7 @@ def main():
         hidden_size = _hidden_size * len(ob_name_lstm)
 
         actor_critic = Policy(coord_size, input_size=(len(ob_name_lstm), len(ob_name_scalar)), \
-        action_space=len(action_space), hidden_size=_hidden_size, window_size=1)
+        action_space=len(action_space), hidden_size=_hidden_size, window_size=1, action_embedding = args.action_embedding)
 
         agent = algo.A2C_ACKTR(
             actor_critic,
@@ -164,20 +167,17 @@ def main():
     if len(args.gpu) == 0:
         use_cuda = False
     else:
-        try:
-            os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
-            use_cuda = True
-        except:
-            print("Please specify only one GPU id.")
-            raise RuntimeError
+        os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
+        use_cuda = True
     if args.optimizer == 'mixture':
         trainer = MetaTrainer(model, nn.CrossEntropyLoss(), optimizer, train_loader = train_loader, \
             val_loader = val_loader, USE_CUDA = use_cuda, writer = writer)
-        runner = MetaRunner(trainer, rollouts, agent, actor_critic, USE_CUDA = use_cuda, writer = writer)
+        runner = MetaRunner(trainer, rollouts, agent, actor_critic, USE_CUDA = use_cuda, writer = writer,
+            meta_epochs = args.meta_epochs)
         runner.run()
     else:
         trainer = Trainer(model, nn.CrossEntropyLoss(), optimizer, train_loader = train_loader, 
-            val_loader = val_loader, USE_CUDA = use_cuda, writer = writer)
+            val_loader = val_loader, USE_CUDA = use_cuda, writer = writer, meta_epochs = args.meta_epochs)
         runner = Runner(trainer, USE_CUDA = use_cuda, writer = writer)
         runner.run()
 

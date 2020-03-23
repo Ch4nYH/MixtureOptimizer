@@ -157,9 +157,9 @@ class Runner(object):
         
     def run(self):
         for idx in range(self.meta_epochs):
-
             self.reset()
             self.step_run(idx)
+
     def step_run(self, epoch):
         prev_loss = self.trainer.observe()
         self.step += self.window_size
@@ -167,7 +167,7 @@ class Runner(object):
             self.step += self.window_size
             curr_loss = self.trainer.observe()
 
-            if self.step % self.total_steps_epoch == 0:
+            if self.step >= self.total_steps_epoch:
                 acc, loss = self.trainer.val()
                 self.writer.add_scalar("val/acc", acc, self.step + self.accumulated_step)
                 self.writer.add_scalar("val/loss", loss, self.step + self.accumulated_step)
