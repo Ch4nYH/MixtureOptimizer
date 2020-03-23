@@ -41,7 +41,7 @@ class Policy(nn.Module):
             pass
         if actions is not None:
             print(actions.shape)
-        print(action_embedding.shape)
+        #print(action_embedding.shape)
         print(observations.shape)
         features, rnn_hidden_states = self.net(observations, rnn_hidden_states)
         distribution = self.action_distribution(features)
