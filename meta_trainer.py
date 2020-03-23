@@ -174,12 +174,13 @@ class MetaRunner(object):
         self.step += self.window_size
         self.rollouts.obs[0].copy_(observation)
         episode_rewards = deque(maxlen=100)
+        action = None
         while self.step < self.total_steps:
             for step in range(self.num_steps):
                 with torch.no_grad():
                     self.step += self.window_size
                     value, action, action_log_prob, recurrent_hidden_states, distribution = \
-                    self.ac.act(self.rollouts.obs[step:step+1], actions, self.rollouts.recurrent_hidden_states[step])
+                    self.ac.act(self.rollouts.obs[step:step+1], action, self.rollouts.recurrent_hidden_states[step])
                     action = action.squeeze(0)
                     action_log_prob = action_log_prob.squeeze(0)
                     value = value.squeeze(0)
