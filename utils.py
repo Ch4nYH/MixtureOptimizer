@@ -62,6 +62,131 @@ class AverageMeter(object):
         self.count += n
         self.avg = self.sum / self.count
 
+def preprocess_strategy(dataset):
+    evaluate_transforms = None
+    if dataset.startswith('CUB224'):
+        train_transforms = transforms.Compose([
+            transforms.Resize(224),
+            transforms.CenterCrop(224),
+            transforms.RandomHorizontalFlip(),
+            #transforms.ColorJitter(0.4, 0, 0.4, 0.4),
+            transforms.ToTensor(),
+            normalize,
+        ])
+        val_transforms = transforms.Compose([
+            transforms.Resize(224),
+            transforms.CenterCrop(224),
+            transforms.ToTensor(),
+            normalize,
+        ])
+        evaluate_transforms = transforms.Compose([
+            transforms.Resize(224),
+            CenterCropWithFlip(224),
+            transforms.Lambda(lambda crops: torch.stack([transforms.ToTensor()(crop) for crop in crops])),
+            transforms.Lambda(lambda crops: torch.stack([normalize(crop) for crop in crops])),
+        ])
+    elif dataset.startswith('CUB'):
+        train_transforms = transforms.Compose([
+            transforms.Resize(448),
+            transforms.CenterCrop(448),
+            transforms.RandomHorizontalFlip(),
+            #transforms.ColorJitter(0.4, 0, 0.4, 0.4),
+            transforms.ToTensor(),
+            normalize,
+        ])
+        val_transforms = transforms.Compose([
+            transforms.Resize(448),
+            transforms.CenterCrop(448),
+            transforms.ToTensor(),
+            normalize,
+        ])
+        evaluate_transforms = transforms.Compose([
+            transforms.Resize(448),
+            CenterCropWithFlip(448),
+            transforms.Lambda(lambda crops: torch.stack([transforms.ToTensor()(crop) for crop in crops])),
+            transforms.Lambda(lambda crops: torch.stack([normalize(crop) for crop in crops])),
+        ])
+
+    elif dataset.startswith('Aircraft'):
+        train_transforms = transforms.Compose([
+            transforms.Resize((512,512)),
+            transforms.CenterCrop(448),
+            transforms.RandomHorizontalFlip(),
+            transforms.ToTensor(),
+            normalize,
+        ])
+        val_transforms = transforms.Compose([
+            transforms.Resize((512,512)),
+            transforms.CenterCrop(448),
+            transforms.ToTensor(),
+            normalize,
+        ])
+        evaluate_transforms = transforms.Compose([
+            transforms.Resize((512,512)),
+            CenterCropWithFlip(448),
+            transforms.Lambda(lambda crops: torch.stack([transforms.ToTensor()(crop) for crop in crops])),
+            transforms.Lambda(lambda crops: torch.stack([normalize(crop) for crop in crops])),
+        ])
+    elif dataset.startswith('Cars'):
+        train_transforms = transforms.Compose([
+            transforms.Resize((448,448)),
+            transforms.RandomHorizontalFlip(),
+            transforms.ToTensor(),
+            normalize,
+        ])
+        val_transforms = transforms.Compose([
+            transforms.Resize((448,448)),
+            transforms.ToTensor(),
+            normalize,
+        ])
+        evaluate_transforms = transforms.Compose([
+            transforms.Resize((448,448)),
+            CenterCropWithFlip(448),
+            transforms.Lambda(lambda crops: torch.stack([transforms.ToTensor()(crop) for crop in crops])),
+            transforms.Lambda(lambda crops: torch.stack([normalize(crop) for crop in crops])),
+        ])
+    elif dataset.startswith('Dogs'):
+        train_transforms = transforms.Compose([
+            transforms.Resize((448, 448)),
+            transforms.RandomHorizontalFlip(),
+            transforms.ToTensor(),
+            normalize,
+        ])
+        val_transforms = transforms.Compose([
+            transforms.Resize((448, 448)),
+            transforms.ToTensor(),
+            normalize,
+        ])
+        evaluate_transforms = transforms.Compose([
+            transforms.Resize((448, 448)),
+            CenterCropWithFlip(448, 448),
+            transforms.Lambda(lambda crops: torch.stack([transforms.ToTensor()(crop) for crop in crops])),
+            transforms.Lambda(lambda crops: torch.stack([normalize(crop) for crop in crops])),
+        ])
+    elif dataset.startswith('ImageNet'):
+        train_transforms = transforms.Compose([
+            transforms.RandomResizedCrop(224),
+            transforms.RandomHorizontalFlip(),
+            transforms.ToTensor(),
+            normalize,
+        ])
+        val_transforms = transforms.Compose([
+            transforms.Resize(256),
+            transforms.CenterCrop(224),
+            transforms.ToTensor(),
+            normalize,
+        ])
+        evaluate_transforms = transforms.Compose([
+            transforms.Resize(256),
+            transforms.TenCrop(224),
+            transforms.Lambda(lambda crops: torch.stack([transforms.ToTensor()(crop) for crop in crops])),
+            transforms.Lambda(lambda crops: torch.stack([normalize(crop) for crop in crops])),
+        ])
+    else:
+        raise KeyError("=> transform method of '{}' does not exist!".format(dataset))
+    return train_transforms, val_transforms, evaluate_transforms
+
+
 if __name__ == '__main__':
     l = [torch.randn((1, 2)), torch.zeros((1,3))]
     print(copy_and_pad(l))

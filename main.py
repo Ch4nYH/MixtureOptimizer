@@ -82,6 +82,10 @@ def main():
         '--name',
         type=str,
         default="")
+    parser.add_argument(
+        '--data',
+        type=str,
+        default="")
     args = parser.parse_args()
 
 
@@ -122,6 +126,13 @@ def main():
         } 
         train_dataset = torchvision.datasets.ImageFolder('./tiny-imagenet-200/train', transform = data_transforms['train'])
         val_dataset = torchvision.datasets.ImageFolder('./tiny-imagenet-200/val', transform = data_transforms['val'])
+    elif args.dataset == 'CUB':
+        train_transforms, val_transforms, evaluate_transforms = preprocess_strategy('CUB')
+        traindir = os.path.join(args.data, 'train')
+        valdir = os.path.join(args.data, 'val')
+        train_dataset = torchvision.datasets.ImageFolder(traindir, train_transforms)
+        val_dataset = torchvision.datasets.ImageFolder(valdir, val_transforms)
+
     train_loader = torch.utils.data.DataLoader(train_dataset, args.batch_size, num_workers=args.worker, shuffle = True)
     val_loader = torch.utils.data.DataLoader(val_dataset, args.batch_size, num_workers=args.worker, shuffle = False)
 
