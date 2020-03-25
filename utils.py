@@ -48,6 +48,40 @@ def accuracy(output, target, topk=(1,)):
             correct_k = correct[:k].view(-1).float().sum(0, keepdim=True)
             res.append(correct_k.mul_(100.0 / batch_size))
         return res[0].item()
+
+def center_crop_with_flip(img, size, vertical_flip=False):
+    crop_h, crop_w = size
+    first_crop = F.center_crop(img, (crop_h, crop_w))
+    if vertical_flip:
+        img = F.vflip(img)
+    else:
+         img = F.hflip(img)
+    second_crop = F.center_crop(img, (crop_h, crop_w))
+    return (first_crop, second_crop)
+
+class CenterCropWithFlip(object):
+    """Center crops with its mirror version.
+
+    Args:
+        size (sequence or int): Desired output size of the crop. If size is an
+            int instead of sequence like (h, w), a square crop (size, size) is
+            made.
+    """
+
+    def __init__(self, size, vertical_flip=False):
+        self.size = size
+        if isinstance(size, numbers.Number):
+            self.size = (int(size), int(size))
+        else:
+            assert len(size) == 2, "Please provide only two dimensions (h, w) for size."
+            self.size = size
+        self.vertical_flip = vertical_flip
+
+    def __call__(self, img):
+        return center_crop_with_flip(img, self.size, self.vertical_flip)
+
+    def __repr__(self):
+        return self.__class__.__name__ + '(size={0}, vertical_flip={1})'.format(self.size, self.vertical_flip)
     
 class AverageMeter(object):
     """Computes and stores the average and current value"""
