@@ -51,19 +51,22 @@ class MetaTrainer(object):
     def observe(self):
         losses = []
         optimizee_step = []
+        val_losses = []
         for idx in range(self.window_size):
             train_loss, train_acc = self.train_step()
             losses.append(train_loss.detach())
             optimizee_step.append((self.step + idx) / self.total_steps_epoch)
-
+            val_loss = self.val_step()
+            val_losses.append(val_loss)
         losses = [sum(losses) / len(losses)]
         optimizee_step = [sum(optimizee_step) / len(optimizee_step)]
         optimizee_step = [torch.tensor(step).cuda() for step in optimizee_step]
-        observation = torch.stack(losses + optimizee_step, dim=0)
+        val_losses = [sum(val_losses) / len(val_losses)]
+        observation = torch.stack(losses + optimizee_step + val_losses, dim=0)
         prev_action = torch.Tensor(self.get_optimizer().actions)
         if self.USE_CUDA:
             prev_action = prev_action.cuda()
-        observation = torch.cat([observation, prev_action], dim = 0).unsqueeze(0)
+        observation = torch.cat([observation, prev_action - 1], dim = 0).unsqueeze(0)
 
         return observation, torch.tensor(losses)
 

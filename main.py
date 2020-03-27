@@ -143,7 +143,7 @@ def main():
     if args.optimizer == 'mixture':
         action_space = np.array([0, 1, 2])
         coord_size = len(model.layers())
-        ob_name_lstm = ["loss", "step"]
+        ob_name_lstm = ["loss", "val_loss", "step"]
         ob_name_scalar = []
         num_steps = 3
         obs_shape = (len(ob_name_lstm) + len(ob_name_scalar) + coord_size, )
