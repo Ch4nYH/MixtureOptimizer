@@ -30,6 +30,7 @@ def main():
     parser.add_argument('--log-dir', type=str, default = "logs")
     parser.add_argument('--num-classes', type=int, help="number of classes")
     parser.add_argument('--action-embedding', type=int, help="embedding", default = 0)
+    parser.add_argument('--log-loss', action="store_true")
     parser.add_argument(
         '--lr-meta', type=float, default=7e-4, help='learning rate (default: 7e-4)')
     parser.add_argument(
@@ -187,7 +188,7 @@ def main():
         use_cuda = True
     if args.optimizer == 'mixture':
         trainer = MetaTrainer(model, nn.CrossEntropyLoss(), optimizer, train_loader = train_loader, \
-            val_loader = val_loader, USE_CUDA = use_cuda, writer = writer)
+            val_loader = val_loader, USE_CUDA = use_cuda, writer = writer, log_loss = args.log_loss)
         runner = MetaRunner(trainer, rollouts, agent, actor_critic, USE_CUDA = use_cuda, writer = writer,
             meta_epochs = args.meta_epochs)
         runner.run()
