@@ -63,7 +63,7 @@ class MetaTrainer(object):
             losses = [sum(losses) / len(losses)]
         else:
             for i in range(len(losses)):
-                losses[i] = torch.log(losses[i]) - torch.log(losses[0])
+                losses[i] = torch.log(losses[i]+1e-6) - torch.log(losses[0] + 1e-6)
             losses = [sum(losses) / len(losses)]
         optimizee_step = [sum(optimizee_step) / len(optimizee_step)]
         optimizee_step = [torch.tensor(step).cuda() for step in optimizee_step]
