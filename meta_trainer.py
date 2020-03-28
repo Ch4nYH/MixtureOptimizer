@@ -14,7 +14,7 @@ import numpy as np
 class MetaTrainer(object):
 
     def __init__(self, model, criterion, optimizer, USE_CUDA=True, \
-        train_loader = None, val_loader = None, print_freq = 5, writer = None, epochs = 30):
+        train_loader = None, val_loader = None, print_freq = 5, writer = None, epochs = 30, log_loss = False):
         self.model = model
         self.criterion = criterion
         self.optimizer = optimizer
@@ -39,6 +39,7 @@ class MetaTrainer(object):
         self.total_steps_val = len(self.val_loader)
         self.step = 0
         self.epochs = epochs
+        self.log_loss = log_loss
         if USE_CUDA:
             self.model = self.model.cuda()
 
@@ -58,7 +59,12 @@ class MetaTrainer(object):
             optimizee_step.append((self.step + idx) / self.total_steps_epoch)
             val_loss = self.val_step()
             val_losses.append(val_loss)
-        losses = [sum(losses) / len(losses)]
+        if not self.log_loss:
+            losses = [sum(losses) / len(losses)]
+        else:
+            for i in range(len(losses)):
+                losses[i] = torch.log(losses[i]) - torch.log(losses[0])
+            losses = [sum(losses) / len(losses)]
         optimizee_step = [sum(optimizee_step) / len(optimizee_step)]
         optimizee_step = [torch.tensor(step).cuda() for step in optimizee_step]
         val_losses = [sum(val_losses) / len(val_losses)]
@@ -68,7 +74,7 @@ class MetaTrainer(object):
             prev_action = prev_action.cuda()
         observation = torch.cat([observation, prev_action - 1], dim = 0).unsqueeze(0)
 
-        return observation, torch.tensor(losses)
+        return observation, torch.tensor(losses), torch.tensor(val_losses)
 
     def train_step(self): 
         self.model.train()
@@ -173,7 +179,7 @@ class MetaRunner(object):
             self.reset()
             self.step_run(idx)
     def step_run(self, epoch):
-        observation, prev_loss = self.trainer.observe()
+        observation, prev_loss, prev_val_loss = self.trainer.observe()
         self.step += self.window_size
         self.rollouts.obs[0].copy_(observation)
         episode_rewards = deque(maxlen=100)
@@ -191,9 +197,9 @@ class MetaRunner(object):
                         self.writer.add_scalar("action/%s"%self.layers[idx], action[idx], self.step + self.accumulated_step)
                         self.writer.add_scalar("entropy/%s"%self.layers[idx], distribution.distributions[idx].entropy(), self.step + self.accumulated_step)
                     self.trainer.get_optimizer().set_actions(action.numpy())
-                observation, curr_loss = self.trainer.observe()
+                observation, curr_loss, curr_val_loss = self.trainer.observe()
                 self.writer.add_scalar("train/loss", curr_loss, self.step + self.accumulated_step)
-                reward = prev_loss - curr_loss
+                reward = (prev_val_loss - curr_val_loss)
                 episode_rewards.append(float(reward.cpu().numpy()))
                 self.writer.add_scalar("reward", reward, self.step + self.accumulated_step)
                 self.rollouts.insert(observation, recurrent_hidden_states, action, action_log_prob, value, reward)

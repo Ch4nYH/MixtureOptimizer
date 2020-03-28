@@ -86,6 +86,11 @@ def main():
         '--data',
         type=str,
         default="")
+
+    parser.add_argument(
+        '--num-steps',
+        type=int,
+        default=3)
     args = parser.parse_args()
 
 
@@ -145,7 +150,7 @@ def main():
         coord_size = len(model.layers())
         ob_name_lstm = ["loss", "val_loss", "step"]
         ob_name_scalar = []
-        num_steps = 3
+        num_steps = args.num_steps
         obs_shape = (len(ob_name_lstm) + len(ob_name_scalar) + coord_size, )
         _hidden_size = 20
         hidden_size = _hidden_size * len(ob_name_lstm)
