@@ -199,7 +199,9 @@ class MetaRunner(object):
                     self.trainer.get_optimizer().set_actions(action.numpy())
                 observation, curr_loss, curr_val_loss = self.trainer.observe()
                 self.writer.add_scalar("train/loss", curr_loss, self.step + self.accumulated_step)
-                reward = (prev_val_loss - curr_val_loss)
+
+                reward = (prev_val_loss - curr_val_loss) * 0.5 + (prev_loss - curr_loss)
+
                 episode_rewards.append(float(reward.cpu().numpy()))
                 self.writer.add_scalar("reward", reward, self.step + self.accumulated_step)
                 self.rollouts.insert(observation, recurrent_hidden_states, action, action_log_prob, value, reward)
