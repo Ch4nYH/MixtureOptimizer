@@ -200,7 +200,7 @@ class MetaRunner(object):
                 observation, curr_loss, curr_val_loss = self.trainer.observe()
                 self.writer.add_scalar("train/loss", curr_loss, self.step + self.accumulated_step)
 
-                reward = (prev_val_loss - curr_val_loss) * 0.0 + (prev_loss - curr_loss)
+                reward = (prev_val_loss - curr_val_loss) * 1 # + (prev_loss - curr_loss)
 
                 episode_rewards.append(float(reward.cpu().numpy()))
                 self.writer.add_scalar("reward", reward, self.step + self.accumulated_step)
