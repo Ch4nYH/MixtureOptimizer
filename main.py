@@ -212,13 +212,13 @@ def main():
     }
 
     if args.optimizer == 'mixture':
-        trainer = MetaTrainer(model, nn.CrossEntropyLoss(), optimizer, trainer_config)
+        trainer = MetaTrainer(model, nn.CrossEntropyLoss(), optimizer, **trainer_config)
 
-        runner = MetaRunner(trainer, rollouts, agent, actor_critic, config)
+        runner = MetaRunner(trainer, rollouts, agent, actor_critic, **runner_config)
         runner.run()
     else:
-        trainer = Trainer(model, nn.CrossEntropyLoss(), optimizer, trainer_config)
-        runner = Runner(trainer, config)
+        trainer = Trainer(model, nn.CrossEntropyLoss(), optimizer, **trainer_config)
+        runner = Runner(trainer, **runner_config)
         runner.run()
 
 if __name__ == '__main__':
