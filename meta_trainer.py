@@ -158,7 +158,7 @@ class MetaRunner(object):
         self.window_size = self.trainer.window_size
         self.epochs = kwargs['epochs']
         self.val_percent = kwargs['val_percent']
-        self.use_log = kwargs['use_gae']
+        self.use_gae = kwargs['use_gae']
         self.num_steps = kwargs['num_steps']
         self.USE_CUDA = kwargs['USE_CUDA']
         self.writer = kwargs['writer']
