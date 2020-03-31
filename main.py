@@ -197,7 +197,7 @@ def main():
         'USE_CUDA':use_cuda, 
         'writer': writer,
         'epochs': args.meta_epochs, 
-        'val_percent':ars.val_percent,
+        'val_percent':args.val_percent,
         'num_steps': args.num_steps,
     }
 
