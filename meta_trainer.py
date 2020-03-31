@@ -12,8 +12,8 @@ import numpy as np
 
 
 class MetaTrainer(object):
-
     def __init__(self, model, criterion, optimizer, **kwargs):
+
         self.model = model
         self.criterion = criterion
         self.optimizer = optimizer
@@ -33,22 +33,22 @@ class MetaTrainer(object):
 
         self.iter_train_loader = iter(self.train_loader)
         self.iter_val_loader = iter(self.val_loader)
-
         self.total_steps = self.epochs * len(self.train_loader)
         self.total_steps_epoch = len(self.train_loader)
         self.total_steps_val = len(self.val_loader)
         self.step = 0
-        
         
         if self.USE_CUDA:
             self.model = self.model.cuda()
 
     def get_steps(self):
         return self.total_steps, self.total_steps_epoch
+
     def reset(self):
         self.step = 0
         self.model.reset()
         self.optimizer.reset()
+
     def observe(self):
         losses = []
         optimizee_step = []
@@ -156,6 +156,7 @@ class MetaRunner(object):
         self.total_steps, self.total_steps_epoch = trainer.get_steps()
         self.step = 0
         self.window_size = self.trainer.window_size
+
         self.epochs = kwargs['epochs']
         self.val_percent = kwargs['val_percent']
         self.use_gae = kwargs['use_gae']
@@ -168,7 +169,6 @@ class MetaRunner(object):
         self.gae_lambda = 0.95
         self.accumulated_step = 0
 
-        self.kwargs = kwargs
     def reset(self):
         self.rollouts.reset()
         self.accumulated_step += self.step
@@ -200,7 +200,7 @@ class MetaRunner(object):
                 observation, curr_loss, curr_val_loss = self.trainer.observe()
                 self.writer.add_scalar("train/loss", curr_loss, self.step + self.accumulated_step)
 
-                reward = (prev_val_loss - curr_val_loss) * self.kwargs['val_percent'] + (prev_loss - curr_loss) * (1 - self.kwargs['val_percent'])
+                reward = (prev_val_loss - curr_val_loss) * self.val_percent + (prev_loss - curr_loss) * (1 - self.val_percent)
 
                 episode_rewards.append(float(reward.cpu().numpy()))
                 self.writer.add_scalar("reward", reward, self.step + self.accumulated_step)
