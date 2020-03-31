@@ -9,7 +9,7 @@ from a2c_ppo_acktr.storage import RolloutStorage
 from collections import deque
 
 import numpy as np
-
+from pdb import set_trace as bp
 
 class MetaTrainer(object):
     def __init__(self, model, criterion, optimizer, **kwargs):
@@ -174,6 +174,9 @@ class MetaRunner(object):
         self.accumulated_step += self.step
         self.step = 0
         self.trainer.reset()
+        if (self.accumulated_step > 0):
+            print(self.rollouts.reward)
+            bp()
     def run(self):
         for idx in range(self.epochs):
             self.reset()
