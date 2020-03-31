@@ -174,9 +174,6 @@ class MetaRunner(object):
         self.accumulated_step += self.step
         self.step = 0
         self.trainer.reset()
-        if (self.accumulated_step > 0):
-            print(self.rollouts.rewards)
-            bp()
     def run(self):
         for idx in range(self.epochs):
             self.reset()
