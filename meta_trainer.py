@@ -40,7 +40,7 @@ class MetaTrainer(object):
         self.step = 0
         
         
-        if USE_CUDA:
+        if self.USE_CUDA:
             self.model = self.model.cuda()
 
     def get_steps(self):

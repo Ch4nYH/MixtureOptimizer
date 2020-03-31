@@ -36,7 +36,7 @@ class Trainer(object):
         self.total_steps_epoch = len(self.train_loader)
         self.total_steps_val = len(self.val_loader)
         self.step = 0
-        if USE_CUDA:
+        if self.USE_CUDA:
             self.model = self.model.cuda()
 
     def get_steps(self):
