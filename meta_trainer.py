@@ -33,7 +33,7 @@ class MetaTrainer(object):
         self.iter_train_loader = iter(self.train_loader)
         self.iter_val_loader = iter(self.val_loader)
 
-        self.total_steps = epochs * len(self.train_loader)
+        self.total_steps = self.epochs * len(self.train_loader)
         self.total_steps_epoch = len(self.train_loader)
         self.total_steps_val = len(self.val_loader)
         self.step = 0
