@@ -199,6 +199,8 @@ def main():
         'epochs': args.meta_epochs, 
         'val_percent':args.val_percent,
         'num_steps': args.num_steps,
+        'use_gae': True,
+        
     }
 
     trainer_config = {
