@@ -30,7 +30,7 @@ def main():
     parser.add_argument('--log-dir', type=str, default = "logs")
     parser.add_argument('--num-classes', type=int, help="number of classes")
     parser.add_argument('--action-embedding', type=int, help="embedding", default = 0)
-    parser.add_argument('--log-loss', action="store_true")
+    parser.add_argument('--use-log-loss', action="store_true")
     parser.add_argument(
         '--lr-meta', type=float, default=7e-4, help='learning rate (default: 7e-4)')
     parser.add_argument(
@@ -92,6 +92,11 @@ def main():
         '--num-steps',
         type=int,
         default=3)
+
+    parser.add_argument(
+        '--val-percent',
+        type=float,
+        default=0.0)
     args = parser.parse_args()
 
 
@@ -146,6 +151,7 @@ def main():
     model = resnet18(pretrained = args.pretrained)
     model.fc = nn.Linear(512, args.num_classes)
 
+   
     if args.optimizer == 'mixture':
         action_space = np.array([0, 1, 2])
         coord_size = len(model.layers())
@@ -186,16 +192,33 @@ def main():
     else:
         os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
         use_cuda = True
+
+    runner_config = {
+        'USE_CUDA':use_cuda, 
+        'writer': writer,
+        'epochs': args.meta_epochs, 
+        'val_percent':ars.val_percent,
+        'num_steps': args.num_steps,
+    }
+
+    trainer_config = {
+        'train_loader': train_loader, 
+        'val_loader': val_loader, 
+        'USE_CUDA':use_cuda, 
+        'writer': writer, 
+        'use_log_loss': args.use_log_loss,
+        'print_freq': 5,
+        'epoch': 30
+    }
+
     if args.optimizer == 'mixture':
-        trainer = MetaTrainer(model, nn.CrossEntropyLoss(), optimizer, train_loader = train_loader, \
-            val_loader = val_loader, USE_CUDA = use_cuda, writer = writer, log_loss = args.log_loss)
-        runner = MetaRunner(trainer, rollouts, agent, actor_critic, USE_CUDA = use_cuda, writer = writer,
-            meta_epochs = args.meta_epochs)
+        trainer = MetaTrainer(model, nn.CrossEntropyLoss(), optimizer, trainer_config)
+
+        runner = MetaRunner(trainer, rollouts, agent, actor_critic, config)
         runner.run()
     else:
-        trainer = Trainer(model, nn.CrossEntropyLoss(), optimizer, train_loader = train_loader, 
-            val_loader = val_loader, USE_CUDA = use_cuda, writer = writer)
-        runner = Runner(trainer, USE_CUDA = use_cuda, writer = writer, meta_epochs = args.meta_epochs)
+        trainer = Trainer(model, nn.CrossEntropyLoss(), optimizer, trainer_config)
+        runner = Runner(trainer, config)
         runner.run()
 
 if __name__ == '__main__':

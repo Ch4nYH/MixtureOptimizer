@@ -13,22 +13,20 @@ import numpy as np
 
 class Trainer(object):
 
-    def __init__(self, model, criterion, optimizer, USE_CUDA=True, \
-        train_loader = None, val_loader = None, print_freq = 5, writer = None, epochs = 30):
+    def __init__(self, model, criterion, optimizer, **kwargs):
         self.model = model
         self.criterion = criterion
         self.optimizer = optimizer
-        
-        self.USE_CUDA = USE_CUDA
 
-        self.train_loader = train_loader
-        self.val_loader = val_loader
+        self.USE_CUDA = kwargs['USE_CUDA']
+        self.train_loader = kwargs['train_loader']
+        self.val_loader = kwargs['val_loader']
+        self.print_preq = kwargs['print_freq']
+        self.writer = kwargs['writer']
+        self.epochs = kwargs['epochs']
 
         self.train_acc = AverageMeter()
         self.val_acc   = AverageMeter()
-        self.print_preq = print_freq
-
-        self.writer = writer
         self.window_size = 5
 
         self.iter_train_loader = iter(self.train_loader)
@@ -38,7 +36,6 @@ class Trainer(object):
         self.total_steps_epoch = len(self.train_loader)
         self.total_steps_val = len(self.val_loader)
         self.step = 0
-        self.epochs = epochs
         if USE_CUDA:
             self.model = self.model.cuda()
 
@@ -135,21 +132,15 @@ class Trainer(object):
         return self.optimizer
 
 class Runner(object):
-    def __init__(self, trainer, meta_epochs = 50, USE_CUDA = False, writer = None):
+    def __init__(self, trainer, **kwargs):
         self.trainer = trainer
-        self.meta_epochs = meta_epochs
+        
         self.total_steps, self.total_steps_epoch = trainer.get_steps()
         self.step = 0
-        self.window_size = self.trainer.window_size
-        self.USE_CUDA = USE_CUDA
-        self.writer = writer
 
-        self.layers = self.trainer.model.layers()
-        self.meta_epochs = meta_epochs
-        self.use_gae = True
-        self.gamma = 0.99
-        self.gae_lambda = 0.95
-        self.accumulated_step = 0
+        self.USE_CUDA = kwargs['USE_CUDA']
+        self.writer = kwargs['writer']
+        self.epochs = kwargs['epochs']
 
     def reset(self):
         self.trainer.reset()
@@ -157,7 +148,7 @@ class Runner(object):
         self.step = 0
         
     def run(self):
-        for idx in range(self.meta_epochs):
+        for idx in range(self.epochs):
             self.reset()
             self.step_run(idx)
 
