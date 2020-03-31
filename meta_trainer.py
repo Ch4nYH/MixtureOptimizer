@@ -164,8 +164,6 @@ class MetaRunner(object):
         self.writer = kwargs['writer']
 
         self.layers = self.trainer.model.layers()
-        self.epochs = epochs
-        self.use_gae = True
         self.gamma = 0.99
         self.gae_lambda = 0.95
         self.accumulated_step = 0
