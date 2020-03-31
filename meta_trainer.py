@@ -59,7 +59,7 @@ class MetaTrainer(object):
             optimizee_step.append((self.step + idx) / self.total_steps_epoch)
             val_loss = self.val_step()
             val_losses.append(val_loss)
-        if not self.log_loss:
+        if not self.use_log_loss:
             losses = [sum(losses) / len(losses)]
         else:
             for i in range(len(losses)):
