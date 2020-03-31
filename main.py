@@ -208,7 +208,7 @@ def main():
         'writer': writer, 
         'use_log_loss': args.use_log_loss,
         'print_freq': 5,
-        'epoch': 30
+        'epochs': 30
     }
 
     if args.optimizer == 'mixture':
