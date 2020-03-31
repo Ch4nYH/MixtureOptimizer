@@ -24,6 +24,7 @@ class MetaTrainer(object):
         self.print_preq = kwargs['print_freq']
         self.writer = kwargs['writer']
         self.epochs = kwargs['epochs']
+        self.use_log_loss = kwargs['use_log_loss']
 
         self.train_acc = AverageMeter()
         self.val_acc   = AverageMeter()
@@ -38,7 +39,7 @@ class MetaTrainer(object):
         self.total_steps_val = len(self.val_loader)
         self.step = 0
         
-        self.log_loss = log_loss
+        
         if USE_CUDA:
             self.model = self.model.cuda()
 
