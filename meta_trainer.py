@@ -156,7 +156,7 @@ class MetaRunner(object):
         self.total_steps, self.total_steps_epoch = trainer.get_steps()
         self.step = 0
         self.window_size = self.trainer.window_size
-        self.epoch = kwargs['epochs']
+        self.epochs = kwargs['epochs']
         self.val_percent = kwargs['val_percent']
         self.use_log = kwargs['use_gae']
         self.num_steps = kwargs['num_steps']
