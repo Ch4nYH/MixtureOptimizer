@@ -242,6 +242,7 @@ class MetaRunner(object):
             for step in range(self.num_steps):
                 with torch.no_grad():
                     self.step += self.window_size
+                    print(prev_hidden.shape)
                     value, action, action_log_prob, prev_hidden, distribution = \
                     self.ac.act(observation, prev_hidden.unsqueeze(0), deterministic = True)
                     action = action.squeeze(0)
