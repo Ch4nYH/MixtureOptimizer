@@ -244,7 +244,7 @@ class MetaRunner(object):
                     self.step += self.window_size
                     print(prev_hidden.shape)
                     value, action, action_log_prob, prev_hidden, distribution = \
-                    self.ac.act(observation, prev_hidden.unsqueeze(0), deterministic = True)
+                    self.ac.act(observation, prev_hidden, deterministic = True)
                     action = action.squeeze(0)
                     action_log_prob = action_log_prob.squeeze(0)
                     value = value.squeeze(0)
