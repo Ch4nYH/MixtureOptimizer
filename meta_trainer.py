@@ -183,7 +183,7 @@ class MetaRunner(object):
             self.reset()
             self.step_run(idx)
             self.save()
-
+        self.reset()
         self.evaluate()
 
     def step_run(self, epoch):
