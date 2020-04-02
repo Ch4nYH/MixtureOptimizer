@@ -234,7 +234,7 @@ class MetaRunner(object):
     def evaluate(self):
         observation, prev_loss, prev_val_loss = self.trainer.observe()
         self.step += self.window_size
-        prev_hidden = torch.zeros_like(self.rollouts.recurrent_hidden_states[0])
+        prev_hidden = torch.zeros_like(self.rollouts.recurrent_hidden_states[0]).unsqueeze(0)
         if self.USE_CUDA:
             prev_hidden = prev_hidden.cuda()
 
