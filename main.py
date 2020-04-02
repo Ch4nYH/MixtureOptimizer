@@ -21,7 +21,7 @@ import tensorboardX
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--gpu', type=str, default = "")
-    parser.add_argument('--epochs', type=int, default = 25)
+    parser.add_argument('--epochs', type=int, default = 30)
     parser.add_argument('--optimizer', type = str, default = "mixture")
     parser.add_argument('--length-unroll', type=int, default = 10)
     parser.add_argument('--batch-size', type=int, default = 1000)
@@ -210,7 +210,7 @@ def main():
         'writer': writer, 
         'use_log_loss': args.use_log_loss,
         'print_freq': 5,
-        'epochs': 30
+        'epochs': args.epoch
     }
 
     if args.optimizer == 'mixture':
