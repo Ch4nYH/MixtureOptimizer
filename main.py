@@ -200,7 +200,7 @@ def main():
         'val_percent':args.val_percent,
         'num_steps': args.num_steps,
         'use_gae': True,
-        
+        'savepath': 'models/' + task_name
     }
 
     trainer_config = {
