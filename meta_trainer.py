@@ -163,21 +163,29 @@ class MetaRunner(object):
         self.num_steps = kwargs['num_steps']
         self.USE_CUDA = kwargs['USE_CUDA']
         self.writer = kwargs['writer']
+        self.savepath = kwargs['savepath']
 
         self.layers = self.trainer.model.layers()
         self.gamma = 0.99
         self.gae_lambda = 0.95
         self.accumulated_step = 0
+    def save(self):
+        torch.save(self.ac, self.savepath)
 
     def reset(self):
         self.rollouts.reset()
         self.accumulated_step += self.step
         self.step = 0
         self.trainer.reset()
+
     def run(self):
         for idx in range(self.epochs):
             self.reset()
             self.step_run(idx)
+            self.save()
+
+        self.evaluate()
+
     def step_run(self, epoch):
         observation, prev_loss, prev_val_loss = self.trainer.observe()
         self.step += self.window_size
@@ -222,3 +230,32 @@ class MetaRunner(object):
                 acc, loss = self.trainer.val()
                 self.writer.add_scalar("val/acc", acc, self.step + self.accumulated_step)
                 self.writer.add_scalar("val/loss", loss, self.step + self.accumulated_step)
+
+    def evaluate(self):
+        observation, prev_loss, prev_val_loss = self.trainer.observe()
+        self.step += self.window_size
+        prev_hidden = torch.zeros_like(self.rollouts.recurrent_hidden_states[0])
+        if self.USE_CUDA:
+            prev_hidden = prev_hidden.cuda()
+
+        while self.step < self.total_steps:
+            for step in range(self.num_steps):
+                with torch.no_grad():
+                    self.step += self.window_size
+                    value, action, action_log_prob, prev_hidden, distribution = \
+                    self.ac.act(observation, prev_hidden, deterministic = True)
+                    action = action.squeeze(0)
+                    action_log_prob = action_log_prob.squeeze(0)
+                    value = value.squeeze(0)
+                    for idx in range(len(action)):
+                        self.writer.add_scalar("evaluate/action/%s"%self.layers[idx], action[idx], self.step + self.accumulated_step)
+                        self.writer.add_scalar("evaluate/entropy/%s"%self.layers[idx], distribution.distributions[idx].entropy(), self.step + self.accumulated_step)
+                    self.trainer.get_optimizer().set_actions(action.numpy())
+                observation, curr_loss, curr_val_loss = self.trainer.observe()
+                self.writer.add_scalar("evaluate/loss", curr_loss, self.step + self.accumulated_step)
+
+            if self.step >= self.total_steps_epoch:
+                acc, loss = self.trainer.val()
+                self.writer.add_scalar("val/acc", acc, self.step + self.accumulated_step)
+                self.writer.add_scalar("val/loss", loss, self.step + self.accumulated_step)
+
