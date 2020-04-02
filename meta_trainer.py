@@ -197,8 +197,8 @@ class MetaRunner(object):
                 with torch.no_grad():
                     self.step += self.window_size
                     value, action, action_log_prob, recurrent_hidden_states, distribution = \
+                    print(self.rollouts.recurrent_hidden_states[step].shape)
                     self.ac.act(self.rollouts.obs[step:step+1], self.rollouts.recurrent_hidden_states[step])
-                    print(recurrent_hidden_states.shape)
                     action = action.squeeze(0)
                     action_log_prob = action_log_prob.squeeze(0)
                     value = value.squeeze(0)
