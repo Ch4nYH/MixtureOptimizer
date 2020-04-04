@@ -23,13 +23,11 @@ def main():
     parser.add_argument('--gpu', type=str, default = "")
     parser.add_argument('--epochs', type=int, default = 30)
     parser.add_argument('--optimizer', type = str, default = "mixture")
-    parser.add_argument('--length-unroll', type=int, default = 10)
     parser.add_argument('--batch-size', type=int, default = 1000)
     parser.add_argument('--worker', type=int, default = 8)
     parser.add_argument('--dataset', type=str, default = "CIFAR10")
     parser.add_argument('--log-dir', type=str, default = "logs")
     parser.add_argument('--num-classes', type=int, help="number of classes")
-    parser.add_argument('--action-embedding', type=int, help="embedding", default = 0)
     parser.add_argument('--use-log-loss', action="store_true")
     parser.add_argument(
         '--lr-meta', type=float, default=7e-4, help='learning rate (default: 7e-4)')
@@ -163,7 +161,7 @@ def main():
         hidden_size = _hidden_size * len(ob_name_lstm)
 
         actor_critic = Policy(coord_size, input_size=(len(ob_name_lstm), len(ob_name_scalar)), \
-        action_space=len(action_space), hidden_size=_hidden_size, window_size=1, action_embedding = args.action_embedding)
+        action_space=len(action_space), hidden_size=_hidden_size, window_size=1)
 
         agent = algo.A2C_ACKTR(
             actor_critic,
