@@ -246,14 +246,14 @@ class MetaRunner(object):
                     action_log_prob = action_log_prob.squeeze(0)
                     value = value.squeeze(0)
                     for idx in range(len(action)):
-                        self.writer.add_scalar("evaluate/action/%s"%self.layers[idx], action[idx], self.step + self.accumulated_step)
-                        self.writer.add_scalar("evaluate/entropy/%s"%self.layers[idx], distribution.distributions[idx].entropy(), self.step + self.accumulated_step)
+                        self.writer.add_scalar("evaluate/action/%s"%self.layers[idx], action[idx], self.step)
+                        self.writer.add_scalar("evaluate/entropy/%s"%self.layers[idx], distribution.distributions[idx].entropy(), self.step)
                     self.trainer.get_optimizer().set_actions(action.numpy())
                 observation, curr_loss, curr_val_loss = self.trainer.observe()
-                self.writer.add_scalar("evaluate/loss", curr_loss, self.step + self.accumulated_step)
+                self.writer.add_scalar("evaluate/loss", curr_loss, self.step)
 
             if self.step >= self.total_steps_epoch:
                 acc, loss = self.trainer.val()
-                self.writer.add_scalar("evaluate/val/acc", acc, self.step + self.accumulated_step)
-                self.writer.add_scalar("evaluate/val/loss", loss, self.step + self.accumulated_step)
+                self.writer.add_scalar("evaluate/val/acc", acc, self.step)
+                self.writer.add_scalar("evaluate/val/loss", loss, self.step)
 
