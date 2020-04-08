@@ -210,6 +210,7 @@ class MetaRunner(object):
 
                 reward = (prev_val_loss - curr_val_loss) * self.val_percent + (prev_loss - curr_loss) * (1 - self.val_percent)
                 prev_loss = curr_loss
+                prev_val_loss = curr_val_loss
                 episode_rewards.append(float(reward.cpu().numpy()))
                 self.writer.add_scalar("reward", reward, self.step + self.accumulated_step)
                 self.rollouts.insert(observation, recurrent_hidden_states, action, action_log_prob, value, reward)
