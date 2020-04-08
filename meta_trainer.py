@@ -209,7 +209,7 @@ class MetaRunner(object):
                 self.writer.add_scalar("train/loss", curr_loss, self.step + self.accumulated_step)
 
                 reward = (prev_val_loss - curr_val_loss) * self.val_percent + (prev_loss - curr_loss) * (1 - self.val_percent)
-
+                prev_loss = curr_loss
                 episode_rewards.append(float(reward.cpu().numpy()))
                 self.writer.add_scalar("reward", reward, self.step + self.accumulated_step)
                 self.rollouts.insert(observation, recurrent_hidden_states, action, action_log_prob, value, reward)
@@ -251,7 +251,7 @@ class MetaRunner(object):
                     self.trainer.get_optimizer().set_actions(action.numpy())
                 observation, curr_loss, curr_val_loss = self.trainer.observe()
                 self.writer.add_scalar("evaluate/loss", curr_loss, self.step)
-
+                
             if self.step >= self.total_steps_epoch:
                 acc, loss = self.trainer.val()
                 self.writer.add_scalar("evaluate/val/acc", acc, self.step)
