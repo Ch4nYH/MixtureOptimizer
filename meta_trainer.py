@@ -74,7 +74,7 @@ class MetaTrainer(object):
             prev_action = prev_action.cuda()
         observation = torch.cat([observation, prev_action - 1], dim = 0).unsqueeze(0)
 
-        return observation, torch.tensor(losses), torch.tensor(val_losses)
+        return observation.detach(), torch.tensor(losses), torch.tensor(val_losses)
 
     def train_step(self): 
         self.model.train()
